@@ -3,18 +3,19 @@
 #include <SFML/Graphics.hpp>
 #include <TGUI/Widgets/Picture.hpp>
 
+#include "../position_widget_menager/position_widget_menager.h"
+
 class CustomPicture : public tgui::Picture {
 public:
   using Ptr = std::shared_ptr<CustomPicture>;
-  CustomPicture(const std::string &path);
+  CustomPicture(const sf::RenderWindow &window_, const std::string &path);
   void setPicture(const std::string &path);
-  void setMiddle(const sf::RenderWindow &window,
-                 tgui::Vector2f &&delta_moved = tgui::Vector2f(0, 0));
 
-  static Ptr create(const std::string &path);
+  static Ptr create(const sf::RenderWindow &window_, const std::string &path);
 
-  const bool isMiddle() const;
+  const RatioWidgetData &getRatioData() const;
+  void setRatioData();
 
 private:
-  bool is_middled = false;
+  RatioWidgetData ratio_data;
 };

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../menu/main_menu/base_main_menu/base_main_menu.h"
+#include "../position_widget_menager/position_widget_menager.h"
 #include "main_game_components/main_game_components.h"
 
 #include <SFML/Graphics.hpp>
@@ -25,6 +26,7 @@ public:
 
 private:
   MainGameComponents components;
+  // PositionWidgetMenager widget_menager;
   Background background;
   MainMenu menu;
 

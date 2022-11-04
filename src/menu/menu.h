@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../position_widget_menager/position_widget_menager.h"
+
 #include <SFML/Graphics.hpp>
 #include <TGUI/Backend/Renderer/BackendRenderTarget.hpp>
 #include <TGUI/Widget.hpp>
@@ -17,14 +19,15 @@ template <typename OPT_ENUM> class Menu : public tgui::VerticalLayout {
 public:
   using Ptr = std::shared_ptr<Menu<OPT_ENUM>>;
 
-  Menu();
+  Menu(const sf::RenderWindow &window);
 
   virtual void addOption(OPT_ENUM option, float space, float ratio) = 0;
 
-  void setMiddle(const sf::RenderWindow &window);
   decltype(auto) getButtonCommand(OPT_ENUM option);
-  void addButtonCommand(OPT_ENUM option, std::function<void()> command);
-  void draw(const sf::RenderWindow &window);
+  void addButtonCommand(
+      OPT_ENUM option,
+      std::function<void()>
+          command); // wprowadzic albo dziedziczenie wielokrotno albo myslec
 
   void setWidgetSpace(const tgui::Widget::Ptr &widget, float ratio);
   void addWidget(const tgui::Widget::Ptr &widget, float space, float ratio);
@@ -32,14 +35,12 @@ public:
   void setButtonRender(const std::string &object_name);
   void setLayoutRender(const std::string &object_name);
 
+  const RatioWidgetData &getRatioData() const;
+  void setRatioData();
+
 protected:
   std::map<OPT_ENUM, tgui::Button::Ptr> buttons;
   std::map<OPT_ENUM, std::function<void()>> buttons_functions;
   tgui::Theme theme;
-
-private:
-  bool is_middled = false;
-
-  const double getXRatio(const sf::RenderWindow &window) const;
-  const double getYRatio(const sf::RenderWindow &window) const;
+  RatioWidgetData ratio_data;
 };

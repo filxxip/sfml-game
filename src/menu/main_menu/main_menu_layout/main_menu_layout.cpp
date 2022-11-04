@@ -9,8 +9,8 @@ std::unordered_map<EnumMenu::MainMenuOpts, std::string> main_menu_options_text{
 };
 }
 
-MainMenuLayout::Ptr MainMenuLayout::create() {
-  return std::make_shared<MainMenuLayout>();
+MainMenuLayout::Ptr MainMenuLayout::create(const sf::RenderWindow &window) {
+  return std::make_shared<MainMenuLayout>(window);
 }
 
 void MainMenuLayout::addOption(EnumMenu::MainMenuOpts option, float space,
@@ -20,14 +20,7 @@ void MainMenuLayout::addOption(EnumMenu::MainMenuOpts option, float space,
   addWidget(button, space, ratio);
 }
 
-// void MainMenuLayout::addPicture(const std::string &path, float space, float
-// ratio) {
-//   auto renderer = title_picture->getRenderer();
-//   auto texture = tgui::Texture(path);
-//   renderer->setTexture(texture);
-//   addWidget(title_picture, space, ratio);
-// }
-
-MainMenuLayout::MainMenuLayout() : Menu<EnumMenu::MainMenuOpts>() {
+MainMenuLayout::MainMenuLayout(const sf::RenderWindow &window)
+    : Menu<EnumMenu::MainMenuOpts>(window) {
   setSize(400, 500);
 }

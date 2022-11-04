@@ -5,11 +5,7 @@
 class MainMenuLayout : public Menu<EnumMenu::MainMenuOpts> {
 public:
   using Ptr = std::shared_ptr<MainMenuLayout>;
-  MainMenuLayout();
-  static Ptr create();
+  MainMenuLayout(const sf::RenderWindow &window);
+  static Ptr create(const sf::RenderWindow &window);
   void addOption(EnumMenu::MainMenuOpts option, float space, float ratio);
-  // void addPicture(const std::string &path, float space, float ratio);
-
-private:
-  // tgui::Picture::Ptr title_picture;
 };

@@ -11,7 +11,6 @@ void Game::start() {
   menu = MainMenuFactory::create(components.window);
   components.gui.add(menu.getPicture());
   components.gui.add(menu.getLayout());
-  // components.gui.remove(menu);
   setBackground(Paths::TEXTURE_PATH);
 }
 
@@ -62,8 +61,13 @@ void Game::poolEvents() {
       components.window.close();
     }
     if (evnt.type == sf::Event::Resized) {
-      if (menu->isVisible()) {
-        menu->draw(components.window);
+      if (menu.getPicture()->isVisible()) {
+        PositionWidgetMenager::keepPosition(components.window,
+                                            menu.getPicture());
+      }
+      if (menu.getLayout()->isVisible()) {
+        PositionWidgetMenager::keepPosition(components.window,
+                                            menu.getLayout());
       }
     }
   }
