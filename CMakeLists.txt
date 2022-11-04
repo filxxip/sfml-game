@@ -13,10 +13,16 @@ find_package(TGUI 0.10 REQUIRED)
 
 # set(TGUI_STATIC_LIBRARIES TRUE)
 add_executable(${PROJECT_NAME}
-    src/main_menu/main_menu.cpp
+    src/menu/main_menu/main_menu.cpp
+    src/menu/main_menu/base_main_menu/base_main_menu.cpp
+    src/menu/main_menu/main_menu_layout/main_menu_layout.cpp
+    src/menu/menu.cpp
     src/game/game.cpp
     src/background/background.cpp
     src/message_box/message_box.cpp
+    src/game/custom_keyboard/custom_keyboard.cpp
+    src/game/main_game_components/main_game_components.cpp
+    src/picture/picture.cpp
     sfml.cpp
 )
 

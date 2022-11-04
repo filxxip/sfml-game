@@ -43,19 +43,14 @@ void CustomMessageBox::addButton(Options option,
 ExitStayMessageBox::ExitStayMessageBox(const sf::RenderWindow &window)
     : theme("../themes/messagebox.style") {
   setText("Are you sure the exit this game?");
-  // getRenderer().gettit
-  // setPositionLocked(true);
+  setPositionLocked(true);
   setSize(250, 110);
   setMiddle(window);
   setTitleTextSize(18);
-  // getRenderer()->setTitleBarHeight
   setTitle("Exit Game");
-  setRenderer(theme.getRenderer("ExitMessageBoxRendererData"));
+  setRenderer(theme.getRenderer("ExitMessageBox"));
+  getRenderer()->setButton(theme.getRenderer("ExitMessageBoxButtons"));
   setLabelAlignment(tgui::MessageBox::Alignment::Center);
-  tgui::RendererData data;
-  // setTitleButtons(1);
-  // getRenderer().
-  // getRenderer()->setTitleBarColor
 }
 
 ExitStayMessageBox::Ptr

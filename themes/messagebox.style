@@ -1,8 +1,12 @@
-ExitMessageBoxRendererData{
+ExitMessageBox{
     TitleBarColor = rgba(158, 95, 6);
     BorderColor = rgba(158, 95, 6);
     Borders = 3;
     BackgroundColor = rgba(201, 165, 113);
     TextSize = 14;
     TitleBarHeight = 25;
+}
+
+ExitMessageBoxButtons{
+    BackgroundColor = rgba(158, 95, 6);
 }
