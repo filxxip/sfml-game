@@ -12,13 +12,21 @@ struct RatioWidgetData {
 
   RatioWidgetData(const sf::RenderWindow &window_) : window(window_) {}
 
-  void set(const tgui::Vector2f &size, const tgui::Vector2f &position) {
+  void setSizeRatios(const tgui::Vector2f &size) {
+    std::cout << "hellow world" << std::endl;
     const auto [width, height] = window.getSize();
-    const auto [message_width, message_height] = window.getSize();
     width_ratio = size.x / width;
     height_ratio = size.y / height;
+  }
+  void setPositionRatios(const tgui::Vector2f &position) {
+    const auto [width, height] = window.getSize();
     x_position_ratio = position.x / width;
     y_position_ratio = position.y / height;
+  }
+
+  void set(const tgui::Vector2f &size, const tgui::Vector2f &position) {
+    setSizeRatios(size);
+    setPositionRatios(size);
   }
 };
 

@@ -1,4 +1,5 @@
 #include "custom_keyboard.h"
+#include "../../../data/config_file.h"
 #include <thread>
 
 CustomKeyboard::CustomKeyboard() {
@@ -30,7 +31,7 @@ void CustomKeyboard::setClickedWithThreadDelay(sf::Keyboard::Key key,
 void CustomKeyboard::setClickedAfterDelay(sf::Keyboard::Key key,
                                           const int miliseconds) {
   std::thread t1(&CustomKeyboard::setClickedWithThreadDelay, this,
-                 sf::Keyboard::Escape, 2000);
+                 sf::Keyboard::Escape, KeyboardData::THREAD_TIME);
   t1.detach();
 }
 

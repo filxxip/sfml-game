@@ -1,11 +1,13 @@
 #include "main_menu_layout.h"
+#include "../../../../data/config_file.h"
 
 namespace {
 std::unordered_map<EnumMenu::MainMenuOpts, std::string> main_menu_options_text{
-    {EnumMenu::MainMenuOpts::EXIT, "exit game"},
-    {EnumMenu::MainMenuOpts::LOAD, "load game"},
-    {EnumMenu::MainMenuOpts::NEW, "new game"},
-    {EnumMenu::MainMenuOpts::RESULTS, "see your results"},
+    {EnumMenu::MainMenuOpts::EXIT, MainMenuData::ButtonsText::EXIT},
+    {EnumMenu::MainMenuOpts::LOAD, MainMenuData::ButtonsText::LOAD},
+    {EnumMenu::MainMenuOpts::NEW, MainMenuData::ButtonsText::NEW},
+    {EnumMenu::MainMenuOpts::RESULTS, MainMenuData::ButtonsText::RESULT},
+    {EnumMenu::MainMenuOpts::OPTIONS, MainMenuData::ButtonsText::OPTIONS},
 };
 }
 
@@ -21,6 +23,4 @@ void MainMenuLayout::addOption(EnumMenu::MainMenuOpts option, float space,
 }
 
 MainMenuLayout::MainMenuLayout(const sf::RenderWindow &window)
-    : Menu<EnumMenu::MainMenuOpts>(window) {
-  setSize(400, 500);
-}
+    : Menu<EnumMenu::MainMenuOpts>(window) {}

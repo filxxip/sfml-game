@@ -1,4 +1,11 @@
 #include "message_box.h"
+#include "../../data/config_file.h"
+
+CustomMessageBox::CustomMessageBox(const sf::RenderWindow &window)
+    : tgui::MessageBox(), ratio_data(window) {
+  onSizeChange([this]() { ratio_data.setSizeRatios(getSize()); });
+  onPositionChange([this]() { ratio_data.setPositionRatios(getPosition()); });
+}
 
 decltype(auto) CustomMessageBox::getButtonItr(const std::string &name) {
   auto result = std::find_if(buttons.begin(), buttons.end(),
@@ -19,20 +26,18 @@ decltype(auto) CustomMessageBox::getCommand(const std::string &name) {
 
 void CustomMessageBox::addButton(const std::string &name,
                                  std::function<void()> command) {
-  MessageBoxButton msg_box_button{name, command};
+  MessageBoxButton msg_box_button{name, [this, command]() {
+                                    command();
+                                    destroy();
+                                  }};
   buttons.push_back(std::move(msg_box_button));
   onButtonPress([this, &name](const auto &text) {
     if (text == name) {
       getCommand(name)();
+      // destroy();
     }
   });
   tgui::MessageBox::addButton(name);
-}
-
-void CustomMessageBox::setMiddle(const sf::RenderWindow &window) {
-  const auto [width, height] = window.getSize();
-  const auto [message_width, message_height] = getSize();
-  setPosition((width - message_width) / 2, (height - message_height) / 2);
 }
 
 void CustomMessageBox::addButton(Options option,
@@ -40,20 +45,36 @@ void CustomMessageBox::addButton(Options option,
   addButton(options_names.at(option), command);
 }
 
-ExitStayMessageBox::ExitStayMessageBox(const sf::RenderWindow &window)
-    : theme("../themes/messagebox.style") {
-  setText("Are you sure the exit this game?");
-  setPositionLocked(true);
-  setSize(250, 110);
-  setMiddle(window);
-  setTitleTextSize(18);
-  setTitle("Exit Game");
-  setRenderer(theme.getRenderer("ExitMessageBox"));
-  getRenderer()->setButton(theme.getRenderer("ExitMessageBoxButtons"));
-  setLabelAlignment(tgui::MessageBox::Alignment::Center);
+CustomMessageBox::Ptr CustomMessageBox::create(const sf::RenderWindow &window) {
+  return std::make_shared<CustomMessageBox>(window);
 }
 
-ExitStayMessageBox::Ptr
-ExitStayMessageBox::create(const sf::RenderWindow &window) {
-  return std::make_shared<ExitStayMessageBox>(window);
+const RatioWidgetData &CustomMessageBox::getRatioData() const {
+  return ratio_data;
+}
+void CustomMessageBox::setRatioData() {
+  ratio_data.set(getSize(), getPosition());
+}
+
+tgui::Theme MsgBoxFactory::theme = tgui::Theme(Paths::MESSAGE_BOX_STYLE);
+
+CustomMessageBox::Ptr
+MsgBoxFactory::createBase(const sf::RenderWindow &window) {
+  auto msgbox = CustomMessageBox::create(window);
+  msgbox->setPositionLocked(true);
+  msgbox->setSize(MessageBoxData::BASE_SIZE);
+  msgbox->setTitleTextSize(MessageBoxData::TEXT_SIZE);
+  msgbox->setLabelAlignment(tgui::MessageBox::Alignment::Center);
+  PositionWidgetMenager::setMiddle(window, msgbox);
+  return msgbox;
+}
+
+CustomMessageBox::Ptr MsgBoxFactory::create(const sf::RenderWindow &window) {
+  auto msgbox = createBase(window);
+  msgbox->setText(MessageBoxData::EXIT_CONTENT);
+  msgbox->setTitle(MessageBoxData::EXIT_TITLE);
+  msgbox->setRenderer(theme.getRenderer(RendererNames::MSGBOX));
+  msgbox->getRenderer()->setButton(
+      theme.getRenderer(RendererNames::MSGBOX_BUTTON));
+  return msgbox;
 }

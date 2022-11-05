@@ -1,5 +1,6 @@
 #include "position_widget_menager.h"
 #include "../menu/main_menu/main_menu_layout/main_menu_layout.h"
+#include "../message_box/message_box.h"
 #include "../picture/picture.h"
 
 template <typename T>
@@ -10,8 +11,6 @@ void PositionWidgetMenager::setMiddle(const sf::RenderWindow &window,
   const auto [message_width, message_height] = widget->getSize();
   widget->setPosition((width - message_width) / 2 + moved_vector.x,
                       (height - message_height) / 2 + moved_vector.y);
-
-  widget->setRatioData();
 }
 
 template <typename T>
@@ -42,3 +41,12 @@ template void
 PositionWidgetMenager::setMiddle(const sf::RenderWindow &window,
                                  const std::shared_ptr<MainMenuLayout> &widget,
                                  const sf::Vector2f &moved_vector);
+
+template void PositionWidgetMenager::keepPosition(
+    const sf::RenderWindow &window,
+    const std::shared_ptr<CustomMessageBox> &widget);
+
+template void PositionWidgetMenager::setMiddle(
+    const sf::RenderWindow &window,
+    const std::shared_ptr<CustomMessageBox> &widget,
+    const sf::Vector2f &moved_vector);

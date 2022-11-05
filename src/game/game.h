@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../menu/main_menu/base_main_menu/base_main_menu.h"
+#include "../message_box/message_box.h"
 #include "../position_widget_menager/position_widget_menager.h"
 #include "main_game_components/main_game_components.h"
 
@@ -19,6 +20,7 @@ public:
   void draw();
   void update();
   void poolEvents();
+  CustomMessageBox::Ptr createMessageBox();
   // void createPauseMessageBox();
   // const bool isOpened() const;
   // const bool isRunning() const;
@@ -26,9 +28,9 @@ public:
 
 private:
   MainGameComponents components;
-  // PositionWidgetMenager widget_menager;
   Background background;
   MainMenu menu;
+  std::weak_ptr<CustomMessageBox> active_messagebox;
 
   // State state = State::RUNNING;
 };

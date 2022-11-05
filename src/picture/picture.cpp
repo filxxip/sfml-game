@@ -3,6 +3,8 @@
 CustomPicture::CustomPicture(const sf::RenderWindow &window_,
                              const std::string &path)
     : ratio_data(window_) {
+  onSizeChange([this]() { ratio_data.setSizeRatios(getSize()); });
+  onPositionChange([this]() { ratio_data.setPositionRatios(getPosition()); });
   setPicture(path);
 }
 

@@ -11,7 +11,7 @@
 #include <functional>
 
 namespace EnumMenu {
-enum class MainMenuOpts { NEW, LOAD, RESULTS, EXIT };
+enum class MainMenuOpts { NEW, LOAD, RESULTS, EXIT, OPTIONS };
 enum class MidGameOpts { LOAD, SAVE };
 } // namespace EnumMenu
 

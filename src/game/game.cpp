@@ -1,6 +1,5 @@
 #include "game.h"
 #include "../../data/config_file.h"
-#include "../message_box/message_box.h"
 #include <TGUI/Widgets/MessageBox.hpp>
 #include <iostream>
 
@@ -11,12 +10,31 @@ void Game::start() {
   menu = MainMenuFactory::create(components.window);
   components.gui.add(menu.getPicture());
   components.gui.add(menu.getLayout());
+  // auto msgbox = MsgBoxFactory::create(components.window);
+  // components.gui.add(msgbox);
+  // createMessageBox();
+  // auto msgbox = createMessageBox();
+  // msgbox->addButton(CustomMessageBox::Options::EXIT, [this]() {
+  //   auto m = createMessageBox();
+  //   m->addButton(CustomMessageBox::Options::STAY,
+  //                []() { std::cout << "jello" << std::endl; });
+  // });
+  // msgbox->addButton(CustomMessageBox::Options::STAY);
   setBackground(Paths::TEXTURE_PATH);
 }
 
 void Game::setBackground(const std::string &texture_path) {
   background.setImage(texture_path);
   background.adjustToWindow(components.window);
+}
+CustomMessageBox::Ptr Game::createMessageBox() {
+  auto msgbox = MsgBoxFactory::create(components.window);
+  components.gui.add(msgbox);
+  active_messagebox = msgbox;
+  // msgbox->addButton(CustomMessageBox::Options::EXIT,
+  //                   [this]() { components.window.close(); });
+  // msgbox->addButton(CustomMessageBox::Options::STAY);
+  return msgbox;
 }
 
 void Game::update() {
@@ -61,6 +79,12 @@ void Game::poolEvents() {
       components.window.close();
     }
     if (evnt.type == sf::Event::Resized) {
+      if (!active_messagebox.expired()) {
+        auto msg = active_messagebox.lock();
+        if (msg->isVisible()) {
+          PositionWidgetMenager::keepPosition(components.window, msg);
+        }
+      }
       if (menu.getPicture()->isVisible()) {
         PositionWidgetMenager::keepPosition(components.window,
                                             menu.getPicture());
