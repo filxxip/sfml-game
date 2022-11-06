@@ -21,6 +21,7 @@ public:
   void update();
   void poolEvents();
   CustomMessageBox::Ptr createMessageBox();
+  void createExitMessageBox();
   // void createPauseMessageBox();
   // const bool isOpened() const;
   // const bool isRunning() const;

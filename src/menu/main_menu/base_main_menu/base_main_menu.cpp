@@ -22,6 +22,11 @@ void MainMenu::setVisible(bool status) {
   title_picture->setVisible(status);
 }
 
+void MainMenu::addButtonCommand(EnumMenu::MainMenuOpts option,
+                                std::function<void()> command) {
+  getLayout()->addButtonCommand(option, std::move(command));
+}
+
 MainMenu MainMenuFactory::create(const sf::RenderWindow &window) {
   auto menu = MainMenu(window, Paths::BOMBER_TITLE_PATH);
   menu.getPicture()->setSize(MainMenuData::PICTURE_SIZE);
@@ -35,10 +40,10 @@ MainMenu MainMenuFactory::create(const sf::RenderWindow &window) {
   menu.getLayout()->addOption(EnumMenu::MainMenuOpts::RESULTS,
                               MainMenuData::FREE_SPACE_RATIO,
                               MainMenuData::BUTTON_RATIO);
-  menu.getLayout()->addOption(EnumMenu::MainMenuOpts::EXIT,
+  menu.getLayout()->addOption(EnumMenu::MainMenuOpts::OPTIONS,
                               MainMenuData::FREE_SPACE_RATIO,
                               MainMenuData::BUTTON_RATIO);
-  menu.getLayout()->addOption(EnumMenu::MainMenuOpts::OPTIONS,
+  menu.getLayout()->addOption(EnumMenu::MainMenuOpts::EXIT,
                               MainMenuData::FREE_SPACE_RATIO,
                               MainMenuData::BUTTON_RATIO);
   menu.setMiddle(window);

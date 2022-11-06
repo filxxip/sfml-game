@@ -14,6 +14,9 @@ public:
   void setVisible(bool status);
   void setMiddle(const sf::RenderWindow &window);
 
+  void addButtonCommand(EnumMenu::MainMenuOpts option,
+                        std::function<void()> command);
+
 private:
   MainMenuLayout::Ptr main_menu_layout;
   CustomPicture::Ptr title_picture;

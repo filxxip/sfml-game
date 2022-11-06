@@ -23,11 +23,7 @@ public:
 
   virtual void addOption(OPT_ENUM option, float space, float ratio) = 0;
 
-  decltype(auto) getButtonCommand(OPT_ENUM option);
-  void addButtonCommand(
-      OPT_ENUM option,
-      std::function<void()>
-          command); // wprowadzic albo dziedziczenie wielokrotno albo myslec
+  void addButtonCommand(OPT_ENUM option, std::function<void()> command);
 
   void setWidgetSpace(const tgui::Widget::Ptr &widget, float ratio);
   void addWidget(const tgui::Widget::Ptr &widget, float space, float ratio);
@@ -38,9 +34,11 @@ public:
   const RatioWidgetData &getRatioData() const;
   void setRatioData();
 
+  void blockButtons();
+  void unblockButtons();
+
 protected:
   std::map<OPT_ENUM, tgui::Button::Ptr> buttons;
-  std::map<OPT_ENUM, std::function<void()>> buttons_functions;
   tgui::Theme theme;
   RatioWidgetData ratio_data;
 };

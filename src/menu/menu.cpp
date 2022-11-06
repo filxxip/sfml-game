@@ -10,14 +10,9 @@ Menu<OPT_ENUM>::Menu(const sf::RenderWindow &window)
 }
 
 template <typename OPT_ENUM>
-decltype(auto) Menu<OPT_ENUM>::getButtonCommand(OPT_ENUM option) {
-  return buttons_functions.at(option);
-}
-
-template <typename OPT_ENUM>
 void Menu<OPT_ENUM>::addButtonCommand(OPT_ENUM option,
                                       std::function<void()> command) {
-  buttons_functions.at(option) = command;
+  buttons.at(option)->onMousePress(std::move(command));
 }
 
 template <typename OPT_ENUM>
@@ -54,6 +49,19 @@ const RatioWidgetData &Menu<OPT_ENUM>::getRatioData() const {
 
 template <typename OPT_ENUM> void Menu<OPT_ENUM>::setRatioData() {
   ratio_data.set(getSize(), getPosition());
+}
+
+template <typename OPT_ENUM> void Menu<OPT_ENUM>::blockButtons() {
+  auto button = tgui::Button::create();
+  for (auto &[name, button] : buttons) {
+    button->setEnabled(false);
+  }
+}
+template <typename OPT_ENUM> void Menu<OPT_ENUM>::unblockButtons() {
+  auto button = tgui::Button::create();
+  for (auto &[name, button] : buttons) {
+    button->setEnabled(true);
+  }
 }
 
 template class Menu<EnumMenu::MainMenuOpts>;

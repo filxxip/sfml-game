@@ -8,6 +8,10 @@ Game::Game(sf::RenderWindow &window_) : components(window_) {}
 void Game::start() {
   components.start();
   menu = MainMenuFactory::create(components.window);
+  menu.addButtonCommand(EnumMenu::MainMenuOpts::EXIT, [this]() {
+    std::cout << "hello" << std::endl;
+    createExitMessageBox();
+  });
   components.gui.add(menu.getPicture());
   components.gui.add(menu.getLayout());
   // auto msgbox = MsgBoxFactory::create(components.window);
@@ -27,13 +31,20 @@ void Game::setBackground(const std::string &texture_path) {
   background.setImage(texture_path);
   background.adjustToWindow(components.window);
 }
+
+void Game::createExitMessageBox() {
+  auto msgbox = createMessageBox();
+  menu.getLayout()->blockButtons();
+  msgbox->addButton(CustomMessageBox::Options::STAY,
+                    [this]() { menu.getLayout()->unblockButtons(); });
+  msgbox->addButton(CustomMessageBox::Options::EXIT,
+                    [this]() { components.window.close(); });
+}
+
 CustomMessageBox::Ptr Game::createMessageBox() {
   auto msgbox = MsgBoxFactory::create(components.window);
   components.gui.add(msgbox);
   active_messagebox = msgbox;
-  // msgbox->addButton(CustomMessageBox::Options::EXIT,
-  //                   [this]() { components.window.close(); });
-  // msgbox->addButton(CustomMessageBox::Options::STAY);
   return msgbox;
 }
 
