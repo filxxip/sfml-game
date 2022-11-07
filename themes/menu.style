@@ -1,12 +1,20 @@
 Layout{
 }
 
-Button{
+DefaultButton{
     BackgroundColor = rgba(66, 135, 245);
     RoundedBorderRadius = 4;
     Borders = 3;
     BorderColor = rgba(81, 91, 107);
     TextColor = rgba(245, 12, 12);
-    TextColorHover = rgba(245, 187, 12);
+    TextSize = 18;
+}
+
+ActiveButton{
+    BackgroundColor = rgba(66, 135, 245);
+    RoundedBorderRadius = 4;
+    Borders = 3;
+    BorderColor = rgba(81, 91, 107);
+    TextColor = rgba(5, 12, 12);
     TextSize = 18;
 }

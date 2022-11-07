@@ -31,6 +31,7 @@ MainMenu MainMenuFactory::create(const sf::RenderWindow &window) {
   auto menu = MainMenu(window, Paths::BOMBER_TITLE_PATH);
   menu.getPicture()->setSize(MainMenuData::PICTURE_SIZE);
   menu.getLayout()->setSize(MainMenuData::LAYOUT_SIZE);
+
   menu.getLayout()->addOption(EnumMenu::MainMenuOpts::NEW,
                               MainMenuData::FREE_SPACE_RATIO,
                               MainMenuData::BUTTON_RATIO);
@@ -47,7 +48,5 @@ MainMenu MainMenuFactory::create(const sf::RenderWindow &window) {
                               MainMenuData::FREE_SPACE_RATIO,
                               MainMenuData::BUTTON_RATIO);
   menu.setMiddle(window);
-  menu.getLayout()->setButtonRender(RendererNames::BUTTON);
-  // menu.getLayout()->setLayoutRender(RendererNames::LAYOUT);
   return menu;
 }

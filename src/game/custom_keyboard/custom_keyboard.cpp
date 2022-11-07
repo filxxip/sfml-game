@@ -28,10 +28,21 @@ void CustomKeyboard::setClickedWithThreadDelay(sf::Keyboard::Key key,
   setClicked(key);
 }
 
-void CustomKeyboard::setClickedAfterDelay(sf::Keyboard::Key key,
-                                          const int miliseconds) {
-  std::thread t1(&CustomKeyboard::setClickedWithThreadDelay, this,
-                 sf::Keyboard::Escape, KeyboardData::THREAD_TIME);
+void CustomKeyboard::setNotClickedWithThreadDelay(sf::Keyboard::Key key,
+                                                  const int miliseconds) {
+  std::this_thread::sleep_for(std::chrono::milliseconds(miliseconds));
+  setNotClicked(key);
+}
+
+void CustomKeyboard::setClickedAfterDelay(sf::Keyboard::Key key) {
+  std::thread t1(&CustomKeyboard::setClickedWithThreadDelay, this, key,
+                 KeyboardData::THREAD_TIME);
+  t1.detach();
+}
+
+void CustomKeyboard::setNotClickedAfterDelay(sf::Keyboard::Key key) {
+  std::thread t1(&CustomKeyboard::setNotClickedWithThreadDelay, this, key,
+                 KeyboardData::THREAD_TIME);
   t1.detach();
 }
 

@@ -16,14 +16,15 @@ constexpr char MESSAGE_BOX_STYLE[] = "../themes/messagebox.style";
 } // namespace Paths
 
 namespace RendererNames {
-constexpr char BUTTON[] = "Button";
+constexpr char DEFAULT_BUTTON[] = "DefaultButton";
+constexpr char ACTIVE_BUTTON[] = "ActiveButton";
 constexpr char LAYOUT[] = "Layout";
 constexpr char MSGBOX[] = "ExitMessageBox";
 constexpr char MSGBOX_BUTTON[] = "ExitMessageBoxButtons";
 } // namespace RendererNames
 
 namespace KeyboardData {
-constexpr int THREAD_TIME = 2000;
+constexpr int THREAD_TIME = 150;
 }
 
 namespace MainMenuData {

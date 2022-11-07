@@ -8,4 +8,5 @@ public:
   MainMenuLayout(const sf::RenderWindow &window);
   static Ptr create(const sf::RenderWindow &window);
   void addOption(EnumMenu::MainMenuOpts option, float space, float ratio);
+  // void unfocusButtons();
 };

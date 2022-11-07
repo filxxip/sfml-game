@@ -17,9 +17,13 @@ MainMenuLayout::Ptr MainMenuLayout::create(const sf::RenderWindow &window) {
 
 void MainMenuLayout::addOption(EnumMenu::MainMenuOpts option, float space,
                                float ratio) {
-  auto button = tgui::Button::create(main_menu_options_text.at(option));
-  buttons.emplace(option, button);
-  addWidget(button, space, ratio);
+  if (std::find_if(buttons.begin(), buttons.end(), [option](auto &pair) {
+        return pair.first == option;
+      }) == buttons.end()) {
+    auto button = tgui::Button::create(main_menu_options_text.at(option));
+    buttons.push_back({option, button});
+    Menu::addButton(button, space, ratio);
+  }
 }
 
 MainMenuLayout::MainMenuLayout(const sf::RenderWindow &window)

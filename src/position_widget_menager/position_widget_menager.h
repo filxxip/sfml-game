@@ -13,7 +13,6 @@ struct RatioWidgetData {
   RatioWidgetData(const sf::RenderWindow &window_) : window(window_) {}
 
   void setSizeRatios(const tgui::Vector2f &size) {
-    std::cout << "hellow world" << std::endl;
     const auto [width, height] = window.getSize();
     width_ratio = size.x / width;
     height_ratio = size.y / height;

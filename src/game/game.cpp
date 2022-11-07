@@ -8,10 +8,8 @@ Game::Game(sf::RenderWindow &window_) : components(window_) {}
 void Game::start() {
   components.start();
   menu = MainMenuFactory::create(components.window);
-  menu.addButtonCommand(EnumMenu::MainMenuOpts::EXIT, [this]() {
-    std::cout << "hello" << std::endl;
-    createExitMessageBox();
-  });
+  menu.addButtonCommand(EnumMenu::MainMenuOpts::EXIT,
+                        [this]() { createExitMessageBox(); });
   components.gui.add(menu.getPicture());
   components.gui.add(menu.getLayout());
   // auto msgbox = MsgBoxFactory::create(components.window);
@@ -49,6 +47,22 @@ CustomMessageBox::Ptr Game::createMessageBox() {
 }
 
 void Game::update() {
+
+  if (menu.getLayout()->isVisible()) {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) &&
+        components.keyboard.isNotClicked(sf::Keyboard::Down)) {
+      menu.getLayout()->focuseNextButton();
+      components.keyboard.setClicked(sf::Keyboard::Down);
+      components.keyboard.setNotClickedAfterDelay(sf::Keyboard::Down);
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) &&
+        components.keyboard.isNotClicked(sf::Keyboard::Up)) {
+      menu.getLayout()->focusePreviousButton();
+      components.keyboard.setClicked(sf::Keyboard::Up);
+      components.keyboard.setNotClickedAfterDelay(sf::Keyboard::Up);
+    }
+    // menu.getLayout()->keyboardMovement();
+  }
   // if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape) && isRunning() &&
   //     keyboard.isNotClicked(sf::Keyboard::Escape)) {
   //   state = State::PAUSE;
