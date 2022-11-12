@@ -82,7 +82,7 @@ public:
 
 class MsgBoxFactory {
 public:
-  enum class MessageBoxType { APP_EXIT, GAME_EXIT, NEW_GAME };
+  enum class MessageBoxType { APP_EXIT, GAME_EXIT, NEW_GAME, RESUME_GAME };
   static CustomMessageBox::Ptr create(MainGameComponents &components,
                                       MessageBoxType type);
   static CustomMessageBox::Ptr createCustomMessageBox(
@@ -98,5 +98,6 @@ private:
       factory_data;
 
   static tgui::Theme theme;
-  static CustomMessageBox::Ptr createBase(MainGameComponents &components);
+  static CustomMessageBox::Ptr createBase(MainGameComponents &components,
+                                          MessageBoxType type);
 };

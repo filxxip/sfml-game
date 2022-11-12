@@ -22,7 +22,9 @@ constexpr char DEFAULT_BUTTON[] = "DefaultButton";
 constexpr char ACTIVE_BUTTON[] = "ActiveButton";
 constexpr char LAYOUT[] = "Layout";
 constexpr char MSGBOX[] = "ExitMessageBox";
+constexpr char EMPTY_MSGBOX[] = "EmptyMessageBox";
 constexpr char MSGBOX_BUTTON[] = "ExitMessageBoxButtons";
+constexpr char EMPTY_MSGBOX_BUTTON[] = "EmptyMessageBoxButtons";
 } // namespace RendererNames
 
 namespace KeyboardData {
@@ -49,6 +51,7 @@ constexpr char OPTIONS[] = "Options";
 
 namespace MessageBoxData {
 constexpr tgui::Vector2f BASE_SIZE{250, 110};
+constexpr tgui::Vector2f EMPTY_SIZE{140, 60};
 constexpr int TEXT_SIZE = 18;
 constexpr char EXIT_TITLE[] = "Exit App";
 constexpr char NEW_GAME_TITLE[] = "Starting New Game";

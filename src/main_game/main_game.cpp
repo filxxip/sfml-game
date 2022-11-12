@@ -97,7 +97,7 @@ void MainGame::createPauseMessageBox() {
     components.keyboard.setNotClicked(sf::Keyboard::P);
   });
   auto messagebox = MsgBoxFactory::createCustomMessageBox(
-      components, MsgBoxFactory::MessageBoxType::GAME_EXIT,
+      components, MsgBoxFactory::MessageBoxType::RESUME_GAME,
       {std::move(stay_pair)});
 
   components.gui.add(messagebox);

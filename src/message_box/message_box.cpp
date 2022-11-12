@@ -109,6 +109,14 @@ const std::unordered_map<
           {MsgBoxFactory::MsgBoxMapTypes::RENDERER_MAIN, RendererNames::MSGBOX},
           {MsgBoxFactory::MsgBoxMapTypes::RENDERER_BUTTON,
            RendererNames::MSGBOX_BUTTON}}},
+        {MsgBoxFactory::MessageBoxType::RESUME_GAME,
+         {{MsgBoxFactory::MsgBoxMapTypes::TITLE, MessageBoxData::EMPTY_TITLE},
+          {MsgBoxFactory::MsgBoxMapTypes::CONTENT,
+           MessageBoxData::EMPTY_CONTENT},
+          {MsgBoxFactory::MsgBoxMapTypes::RENDERER_MAIN,
+           RendererNames::EMPTY_MSGBOX},
+          {MsgBoxFactory::MsgBoxMapTypes::RENDERER_BUTTON,
+           RendererNames::EMPTY_MSGBOX_BUTTON}}},
         {MsgBoxFactory::MessageBoxType::GAME_EXIT,
          {{MsgBoxFactory::MsgBoxMapTypes::TITLE,
            MessageBoxData::EXIT_GAME_TITLE},
@@ -128,11 +136,13 @@ const std::unordered_map<
 
 tgui::Theme MsgBoxFactory::theme = tgui::Theme(Paths::MESSAGE_BOX_STYLE);
 
-CustomMessageBox::Ptr
-MsgBoxFactory::createBase(MainGameComponents &components) {
+CustomMessageBox::Ptr MsgBoxFactory::createBase(MainGameComponents &components,
+                                                MessageBoxType type) {
   auto msgbox = CustomMessageBox::create(components);
   msgbox->setPositionLocked(true);
-  msgbox->setSize(MessageBoxData::BASE_SIZE);
+  msgbox->setSize(type == MessageBoxType::RESUME_GAME
+                      ? MessageBoxData::EMPTY_SIZE
+                      : MessageBoxData::BASE_SIZE);
   msgbox->setTitleTextSize(MessageBoxData::TEXT_SIZE);
   msgbox->setLabelAlignment(tgui::MessageBox::Alignment::Center);
   PositionWidgetMenager::setMiddle(components.window, msgbox);
@@ -141,7 +151,7 @@ MsgBoxFactory::createBase(MainGameComponents &components) {
 
 CustomMessageBox::Ptr MsgBoxFactory::create(MainGameComponents &components,
                                             MessageBoxType type) {
-  auto msgbox = createBase(components);
+  auto msgbox = createBase(components, type);
   const auto &msgbox_data = factory_data.at(type);
   msgbox->setText(msgbox_data.at(MsgBoxFactory::MsgBoxMapTypes::CONTENT));
   msgbox->setTitle(msgbox_data.at(MsgBoxFactory::MsgBoxMapTypes::TITLE));
@@ -161,5 +171,6 @@ CustomMessageBox::Ptr MsgBoxFactory::createCustomMessageBox(
   // menu.getLayout()->blockButtons();
   msgbox->addButtons(buttons);
   return msgbox;
+  auto x = tgui::Button::create();
   // active_messagebox = msgbox;
 }

@@ -7,6 +7,19 @@ ExitMessageBox{
     TitleBarHeight = 25;
 }
 
+EmptyMessageBox{
+    BorderColor = rgba(158, 95, 6);
+    Borders = 3;
+    BackgroundColor = rgba(201, 165, 113);
+    TextSize = 14;
+    TitleBarHeight = 0;
+}
+
 ExitMessageBoxButtons{
     BackgroundColor = rgba(158, 95, 6);
+}
+
+EmptyMessageBoxButtons{
+    BackgroundColor = rgba(158, 95, 6);
+    RoundedBorderRadius = 3;
 }
