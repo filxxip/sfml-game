@@ -23,6 +23,8 @@ add_executable(${PROJECT_NAME}
     src/game/main_game_components/main_game_components.cpp
     src/picture/picture.cpp
     src/position_widget_menager/position_widget_menager.cpp
+    src/player/player.cpp
+    src/main_game/main_game.cpp
     sfml.cpp
 )
 

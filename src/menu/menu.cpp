@@ -3,14 +3,18 @@
 #include <iterator>
 
 template <typename OPT_ENUM>
-Menu<OPT_ENUM>::Menu(const sf::RenderWindow &window)
-    : theme(Paths::MENU_STYLE), ratio_data(window),
+Menu<OPT_ENUM>::Menu(MainGameComponents &components_)
+    : components(components_), theme(Paths::MENU_STYLE),
       current_option(buttons.end()),
       default_theme_button_name(RendererNames::DEFAULT_BUTTON),
       active_theme_button_name(RendererNames::ACTIVE_BUTTON), VerticalLayout() {
   setSize("100%", "100%");
-  onSizeChange([this]() { ratio_data.setSizeRatios(getSize()); });
-  onPositionChange([this]() { ratio_data.setPositionRatios(getPosition()); });
+  // onSizeChange([this]() {
+  //   std::cout << "zmieniam wielkosc" << std::endl;
+  //   ratio_data.setSizeRatios(getSize());
+  // });
+  // onPositionChange([this]() { ratio_data.setPositionRatios(getPosition());
+  // });
 }
 
 template <typename OPT_ENUM>
@@ -21,7 +25,8 @@ void Menu<OPT_ENUM>::addButtonCommand(OPT_ENUM option,
                    [option](auto &pair) { return pair.first == option; });
 
   if (button_pair != buttons.end()) {
-    button_pair->second->onMousePress(std::move(command));
+    buttons_functions.at(option) = std::move(command);
+    button_pair->second->onMousePress(buttons_functions.at(option));
   }
 }
 
@@ -65,6 +70,7 @@ void Menu<OPT_ENUM>::setCurrentOption(const tgui::Button::Ptr &button) {
 }
 
 template <typename OPT_ENUM> void Menu<OPT_ENUM>::unsetCurrentOption() {
+  // setCurrentTheme(default_theme_button_name);
   current_option = buttons.end();
 }
 
@@ -103,8 +109,19 @@ void Menu<OPT_ENUM>::addButton(const tgui::Button::Ptr &button, float space,
   });
   button->onMouseLeave([this, button]() {
     setWidgetTheme(default_theme_button_name, button);
-    unsetCurrentOption();
+    if (isCurrent(button)) {
+      unsetCurrentOption();
+    }
   });
+}
+
+template <typename OPT_ENUM>
+bool Menu<OPT_ENUM>::isCurrent(const tgui::Button::Ptr &button) const {
+
+  return std::find_if(buttons.begin(), buttons.end(),
+                      [&button](const auto &pair) {
+                        return pair.second == button;
+                      }) == current_option;
 }
 
 template <typename OPT_ENUM>
@@ -112,13 +129,34 @@ void Menu<OPT_ENUM>::setLayoutRender(const std::string &object_name) {
   setRenderer(theme.getRenderer(object_name));
 }
 
-template <typename OPT_ENUM>
-const RatioWidgetData &Menu<OPT_ENUM>::getRatioData() const {
-  return ratio_data;
+// template <typename OPT_ENUM>
+// const RatioWidgetData &Menu<OPT_ENUM>::getRatioData() const {
+//   return ratio_data;
+// }
+
+// template <typename OPT_ENUM> void Menu<OPT_ENUM>::setRatioData() {
+//   ratio_data.set(getSize(), getPosition());
+// }
+
+template <typename OPT_ENUM> void Menu<OPT_ENUM>::moveMenu() {
+  if (components.keyboard.wasClickedYet(sf::Keyboard::Down)) {
+    std::cout << "hello" << std::endl;
+    focuseNextButton();
+    components.keyboard.clickAndUnclickKey(sf::Keyboard::Down);
+  }
+  if (components.keyboard.wasClickedYet(sf::Keyboard::Up)) {
+    focusePreviousButton();
+    components.keyboard.clickAndUnclickKey(sf::Keyboard::Up);
+  }
 }
 
-template <typename OPT_ENUM> void Menu<OPT_ENUM>::setRatioData() {
-  ratio_data.set(getSize(), getPosition());
+template <typename OPT_ENUM> void Menu<OPT_ENUM>::setOptionUsingKeyBoard() {
+  if (components.keyboard.wasClickedYet(sf::Keyboard::Enter) &&
+      isCurrentOptionInButtons()) {
+
+    buttons_functions.at(current_option->first)();
+    components.keyboard.clickAndUnclickKey(sf::Keyboard::Enter);
+  }
 }
 
 template <typename OPT_ENUM> void Menu<OPT_ENUM>::blockButtons() {
@@ -137,31 +175,40 @@ template <typename OPT_ENUM> void Menu<OPT_ENUM>::unblockButtons() {
 template <typename OPT_ENUM> void Menu<OPT_ENUM>::focuseNextButton() {
   if (!isCurrentOptionInButtons()) {
     auto optional_current = buttons.begin();
-    setWidgetTheme(active_theme_button_name, optional_current->second);
-    current_option = optional_current;
+    if (optional_current->second->isEnabled()) {
+      setWidgetTheme(active_theme_button_name, optional_current->second);
+      current_option = optional_current;
+    }
     return;
   }
-  setCurrentTheme(default_theme_button_name);
+
   auto optional_current = current_option == std::prev(buttons.end())
                               ? buttons.begin()
                               : std::next(current_option);
-  setWidgetTheme(active_theme_button_name, optional_current->second);
-  current_option = optional_current;
+  if (optional_current->second->isEnabled()) {
+    setCurrentTheme(default_theme_button_name);
+    setWidgetTheme(active_theme_button_name, optional_current->second);
+    current_option = optional_current;
+  }
 }
 
 template <typename OPT_ENUM> void Menu<OPT_ENUM>::focusePreviousButton() {
   if (!isCurrentOptionInButtons()) {
     auto optional_current = std::prev(buttons.end());
-    setWidgetTheme(active_theme_button_name, optional_current->second);
-    current_option = optional_current;
+    if (optional_current->second->isEnabled()) {
+      setWidgetTheme(active_theme_button_name, optional_current->second);
+      current_option = optional_current;
+    }
     return;
   }
-  setCurrentTheme(default_theme_button_name);
   auto optional_current = current_option == buttons.begin()
                               ? std::prev(buttons.end())
                               : std::prev(current_option);
-  setWidgetTheme(active_theme_button_name, optional_current->second);
-  current_option = optional_current;
+  if (optional_current->second->isEnabled()) {
+    setCurrentTheme(default_theme_button_name);
+    setWidgetTheme(active_theme_button_name, optional_current->second);
+    current_option = optional_current;
+  }
 } // cos pozmieniac bo podobne
 
 template class Menu<EnumMenu::MainMenuOpts>;

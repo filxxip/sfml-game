@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../main_game/main_game.h"
 #include "../menu/main_menu/base_main_menu/base_main_menu.h"
 #include "../message_box/message_box.h"
 #include "../position_widget_menager/position_widget_menager.h"
@@ -15,13 +16,19 @@ public:
 
   Game(sf::RenderWindow &window_);
   void start();
-  void setBackground(const std::string &texture_path);
+  // void setBackground(const std::string &texture_path);
   void run();
   void draw();
   void update();
   void poolEvents();
-  CustomMessageBox::Ptr createMessageBox();
-  void createExitMessageBox();
+  // CustomMessageBox::Ptr createMessageBox();
+  // void createCustomMessageBox(
+  //     MsgBoxFactory::MessageBoxType type,
+  //     std::vector<std::pair<CustomMessageBox::Options,
+  //     std::function<void()>>>
+  //         buttons);
+  void startNewGame();
+  // void keepWidgetsPosition();
   // void createPauseMessageBox();
   // const bool isOpened() const;
   // const bool isRunning() const;
@@ -29,9 +36,10 @@ public:
 
 private:
   MainGameComponents components;
-  Background background;
+  // Background background;
   MainMenu menu;
-  std::weak_ptr<CustomMessageBox> active_messagebox;
+  MainGame main_game;
+  // UniqueWindowMsgBox active_messagebox;
 
   // State state = State::RUNNING;
 };

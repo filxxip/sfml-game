@@ -11,8 +11,8 @@ std::unordered_map<EnumMenu::MainMenuOpts, std::string> main_menu_options_text{
 };
 }
 
-MainMenuLayout::Ptr MainMenuLayout::create(const sf::RenderWindow &window) {
-  return std::make_shared<MainMenuLayout>(window);
+MainMenuLayout::Ptr MainMenuLayout::create(MainGameComponents &components) {
+  return std::make_shared<MainMenuLayout>(components);
 }
 
 void MainMenuLayout::addOption(EnumMenu::MainMenuOpts option, float space,
@@ -22,9 +22,10 @@ void MainMenuLayout::addOption(EnumMenu::MainMenuOpts option, float space,
       }) == buttons.end()) {
     auto button = tgui::Button::create(main_menu_options_text.at(option));
     buttons.push_back({option, button});
+    buttons_functions.emplace(std::make_pair(option, []() {}));
     Menu::addButton(button, space, ratio);
   }
 }
 
-MainMenuLayout::MainMenuLayout(const sf::RenderWindow &window)
-    : Menu<EnumMenu::MainMenuOpts>(window) {}
+MainMenuLayout::MainMenuLayout(MainGameComponents &components)
+    : Menu<EnumMenu::MainMenuOpts>(components) {}

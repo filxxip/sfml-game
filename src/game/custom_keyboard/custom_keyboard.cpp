@@ -49,3 +49,12 @@ void CustomKeyboard::setNotClickedAfterDelay(sf::Keyboard::Key key) {
 void CustomKeyboard::setNotClicked(sf::Keyboard::Key key) {
   clickedStatus.at(key) = false;
 }
+
+const bool CustomKeyboard::wasClickedYet(sf::Keyboard::Key key) {
+  return sf::Keyboard::isKeyPressed(key) && isNotClicked(key);
+}
+
+void CustomKeyboard::clickAndUnclickKey(sf::Keyboard::Key key) {
+  setClicked(key);
+  setNotClickedAfterDelay(key);
+}

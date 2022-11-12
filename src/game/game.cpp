@@ -1,93 +1,66 @@
 #include "game.h"
 #include "../../data/config_file.h"
+#include <TGUI/Signal.hpp>
 #include <TGUI/Widgets/MessageBox.hpp>
 #include <iostream>
 
-Game::Game(sf::RenderWindow &window_) : components(window_) {}
+Game::Game(sf::RenderWindow &window_)
+    : components(window_), menu(MainMenuFactory::create(components)),
+      main_game(components) {
+  main_game.own_signal.connect([this]() { menu.initialize(); });
+}
 
 void Game::start() {
-  components.start();
-  menu = MainMenuFactory::create(components.window);
-  menu.addButtonCommand(EnumMenu::MainMenuOpts::EXIT,
-                        [this]() { createExitMessageBox(); });
-  components.gui.add(menu.getPicture());
-  components.gui.add(menu.getLayout());
-  // auto msgbox = MsgBoxFactory::create(components.window);
-  // components.gui.add(msgbox);
-  // createMessageBox();
-  // auto msgbox = createMessageBox();
-  // msgbox->addButton(CustomMessageBox::Options::EXIT, [this]() {
-  //   auto m = createMessageBox();
-  //   m->addButton(CustomMessageBox::Options::STAY,
-  //                []() { std::cout << "jello" << std::endl; });
-  // });
-  // msgbox->addButton(CustomMessageBox::Options::STAY);
-  setBackground(Paths::TEXTURE_PATH);
+  menu.addButtonCommand(EnumMenu::MainMenuOpts::EXIT, [this]() {
+    menu.createCustomMessageBox(
+        MsgBoxFactory::MessageBoxType::APP_EXIT,
+        {std::make_pair(CustomMessageBox::Options::STAY,
+                        [this]() { menu.getLayout()->unblockButtons(); }),
+         std::make_pair(CustomMessageBox::Options::EXIT,
+                        [this]() { components.window.close(); })});
+  });
+
+  menu.addButtonCommand(EnumMenu::MainMenuOpts::NEW, [this]() {
+    menu.createCustomMessageBox(
+        MsgBoxFactory::MessageBoxType::NEW_GAME,
+        {std::make_pair(CustomMessageBox::Options::YES,
+                        [this]() { startNewGame(); }),
+         std::make_pair(CustomMessageBox::Options::NO,
+                        [this]() { menu.getLayout()->unblockButtons(); })});
+  });
+
+  menu.addToGui(components.gui);
 }
 
-void Game::setBackground(const std::string &texture_path) {
-  background.setImage(texture_path);
-  background.adjustToWindow(components.window);
-}
+// void Game::createCustomMessageBox(
+//     MsgBoxFactory::MessageBoxType type,
+//     std::vector<std::pair<CustomMessageBox::Options, std::function<void()>>>
+//         buttons) {
+//   auto msgbox =
+//       MsgBoxFactory::createCustomMessageBox(components.window, type,
+//       buttons);
+//   components.gui.add(msgbox);
+//   menu.getLayout()->blockButtons();
+//   active_messagebox = msgbox;
+// }
 
-void Game::createExitMessageBox() {
-  auto msgbox = createMessageBox();
-  menu.getLayout()->blockButtons();
-  msgbox->addButton(CustomMessageBox::Options::STAY,
-                    [this]() { menu.getLayout()->unblockButtons(); });
-  msgbox->addButton(CustomMessageBox::Options::EXIT,
-                    [this]() { components.window.close(); });
-}
-
-CustomMessageBox::Ptr Game::createMessageBox() {
-  auto msgbox = MsgBoxFactory::create(components.window);
-  components.gui.add(msgbox);
-  active_messagebox = msgbox;
-  return msgbox;
+void Game::startNewGame() {
+  menu.remove();
+  main_game.initialize();
+  // main_game.setVisible(true);
 }
 
 void Game::update() {
-
-  if (menu.getLayout()->isVisible()) {
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) &&
-        components.keyboard.isNotClicked(sf::Keyboard::Down)) {
-      menu.getLayout()->focuseNextButton();
-      components.keyboard.setClicked(sf::Keyboard::Down);
-      components.keyboard.setNotClickedAfterDelay(sf::Keyboard::Down);
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) &&
-        components.keyboard.isNotClicked(sf::Keyboard::Up)) {
-      menu.getLayout()->focusePreviousButton();
-      components.keyboard.setClicked(sf::Keyboard::Up);
-      components.keyboard.setNotClickedAfterDelay(sf::Keyboard::Up);
-    }
-    // menu.getLayout()->keyboardMovement();
+  if (menu.isInitialized()) {
+    menu.getLayout()->moveMenu();
+    menu.checkMsgBox();
   }
-  // if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape) && isRunning() &&
-  //     keyboard.isNotClicked(sf::Keyboard::Escape)) {
-  //   state = State::PAUSE;
-  //   keyboard.setClickedAfterDelay(sf::Keyboard::Escape, 300);
-  //   createPauseMessageBox();
-  // }
-  // if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape) && isPause() &&
-  //     keyboard.isClicked(sf::Keyboard::Escape)) {
-  //   state = State::RUNNING;
-  //   keyboard.setNotClicked(sf::Keyboard::Escape);
-  // }
+
+  if (main_game.isInitialized()) {
+    main_game.movePlayer();
+    main_game.checkPause();
+  }
 }
-
-// void Game::createPauseMessageBox() {
-//   auto messagebox = ExitStayMessageBox::create(components.window);
-//   messagebox->addButton(CustomMessageBox::Options::STAY, [this, messagebox]()
-//   {
-//     messagebox->destroy();
-//     state = State::RUNNING;
-//   });
-//   messagebox->addButton(CustomMessageBox::Options::EXIT,
-//                         [this]() { components.window.close(); });
-//   components.gui.add(messagebox);
-// }
-
 void Game::run() {
   while (components.isOpened()) {
     poolEvents();
@@ -97,34 +70,40 @@ void Game::run() {
 }
 
 void Game::poolEvents() {
-  auto &evnt = components.evnt;
-  while (components.window.pollEvent(evnt)) {
-    components.gui.handleEvent(evnt);
-    if (evnt.type == sf::Event::Closed) {
+  while (components.window.pollEvent(components.evnt)) {
+    components.gui.handleEvent(components.evnt);
+    if (components.evnt.type == sf::Event::Closed) {
       components.window.close();
     }
-    if (evnt.type == sf::Event::Resized) {
-      if (!active_messagebox.expired()) {
-        auto msg = active_messagebox.lock();
-        if (msg->isVisible()) {
-          PositionWidgetMenager::keepPosition(components.window, msg);
-        }
-      }
-      if (menu.getPicture()->isVisible()) {
-        PositionWidgetMenager::keepPosition(components.window,
-                                            menu.getPicture());
-      }
-      if (menu.getLayout()->isVisible()) {
-        PositionWidgetMenager::keepPosition(components.window,
-                                            menu.getLayout());
-      }
-    }
+    // if (components.evnt.type == sf::Event::Resized) {
+    //   keepWidgetsPosition();
+    // }
   }
 }
 
+// void Game::keepWidgetsPosition() {
+
+//   if (!active_messagebox.expired()) {
+//     auto msg = active_messagebox.lock();
+//     if (msg->isVisible()) {
+//       PositionWidgetMenager::keepPosition(components.window, msg);
+//     }
+//   }
+//   if (menu.isInitialized()) {
+//     PositionWidgetMenager::keepPosition(components.window, menu.getLayout());
+//     PositionWidgetMenager::keepPosition(components.window,
+//     menu.getPicture());
+//   }
+//   if (main_game.isInitialized()) {
+//     PositionWidgetMenager::keepPosition(components.window,
+//                                         main_game.getPlayer().getImage());
+//   }
+//   std::cout << "wykonalo" << std::endl;
+// }
+
 void Game::draw() {
   components.window.clear();
-  components.window.draw(background.getSprite());
+  components.window.draw(components.background.getSprite());
   components.gui.draw();
   components.window.display();
 }

@@ -11,8 +11,10 @@ struct MainGameComponents {
   tgui::Gui gui;
   CustomKeyboard keyboard;
   sf::Event evnt;
+  Background background;
 
   MainGameComponents(sf::RenderWindow &window_);
   const bool isOpened() const;
+  void setBackground(const std::string &texture_path);
   void start();
 };

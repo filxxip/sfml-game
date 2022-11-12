@@ -19,4 +19,6 @@ public:
   void setClickedAfterDelay(sf::Keyboard::Key key);
   void setNotClicked(sf::Keyboard::Key key);
   void setNotClickedAfterDelay(sf::Keyboard::Key key);
+  const bool wasClickedYet(sf::Keyboard::Key key);
+  void clickAndUnclickKey(sf::Keyboard::Key key);
 };

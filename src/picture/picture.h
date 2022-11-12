@@ -13,9 +13,9 @@ public:
 
   static Ptr create(const sf::RenderWindow &window_, const std::string &path);
 
-  const RatioWidgetData &getRatioData() const;
-  void setRatioData();
+  // const RatioWidgetData &getRatioData() const;
+  // void setRatioData();
 
 private:
-  RatioWidgetData ratio_data;
+  // RatioWidgetData ratio_data;
 };

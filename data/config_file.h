@@ -11,6 +11,8 @@ constexpr char TITLE[] = "Bomberman";
 namespace Paths {
 constexpr char TEXTURE_PATH[] = "../images/texture.jpg";
 constexpr char BOMBER_TITLE_PATH[] = "../images/bomber.png";
+constexpr char BOMBER_PLAYER[] = "../images/bomber_player.png";
+constexpr char GAME_BACKGROUND[] = "../images/game_background.jpg";
 constexpr char MENU_STYLE[] = "../themes/menu.style";
 constexpr char MESSAGE_BOX_STYLE[] = "../themes/messagebox.style";
 } // namespace Paths
@@ -24,7 +26,7 @@ constexpr char MSGBOX_BUTTON[] = "ExitMessageBoxButtons";
 } // namespace RendererNames
 
 namespace KeyboardData {
-constexpr int THREAD_TIME = 150;
+constexpr int THREAD_TIME = 300;
 }
 
 namespace MainMenuData {
@@ -48,7 +50,14 @@ constexpr char OPTIONS[] = "Options";
 namespace MessageBoxData {
 constexpr tgui::Vector2f BASE_SIZE{250, 110};
 constexpr int TEXT_SIZE = 18;
-constexpr char EXIT_TITLE[] = "Exit Game";
-constexpr char EXIT_CONTENT[] = "Are you sure the exit this game?";
+constexpr char EXIT_TITLE[] = "Exit App";
+constexpr char NEW_GAME_TITLE[] = "Starting New Game";
+constexpr char EXIT_GAME_TITLE[] = "Exit Game";
+constexpr char RESUME_GAME_TITLE[] = "Resume Game";
+constexpr char EMPTY_CONTENT[] = "";
+constexpr char EMPTY_TITLE[] = "";
+constexpr char EXIT_CONTENT[] = "Are you sure the exit this app?";
+constexpr char NEW_GAME_CONTENT[] = "Are you sure to start new game?";
+constexpr char EXIT_GAME_CONTENT[] = "Are you sure to finish this game?";
 
 } // namespace MessageBoxData
