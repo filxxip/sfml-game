@@ -16,11 +16,10 @@ void MainMenu::setMiddle() {
 }
 
 void MainMenu::createCustomMessageBox(
-    MsgBoxFactory::MessageBoxType type,
+    const std::string &path,
     std::vector<std::pair<CustomMessageBox::Options, std::function<void()>>>
         buttons) {
-  auto msgbox =
-      MsgBoxFactory::createCustomMessageBox(components, type, buttons);
+  auto msgbox = MsgBoxFactory::create(components, path, buttons);
   components.gui.add(msgbox);
   main_menu_layout->blockButtons();
   active_messagebox = msgbox;

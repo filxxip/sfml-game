@@ -13,16 +13,18 @@ Game::Game(sf::RenderWindow &window_)
 void Game::start() {
   menu.addButtonCommand(EnumMenu::MainMenuOpts::EXIT, [this]() {
     menu.createCustomMessageBox(
-        MsgBoxFactory::MessageBoxType::APP_EXIT,
-        {std::make_pair(CustomMessageBox::Options::STAY,
-                        [this]() { menu.getLayout()->unblockButtons(); }),
-         std::make_pair(CustomMessageBox::Options::EXIT,
-                        [this]() { components.window.close(); })});
+        Json::EXIT_APP,
+        {
+            std::make_pair(CustomMessageBox::Options::EXIT,
+                           [this]() { components.window.close(); }),
+            std::make_pair(CustomMessageBox::Options::STAY,
+                           [this]() { menu.getLayout()->unblockButtons(); }),
+        });
   });
 
   menu.addButtonCommand(EnumMenu::MainMenuOpts::NEW, [this]() {
     menu.createCustomMessageBox(
-        MsgBoxFactory::MessageBoxType::NEW_GAME,
+        Json::NEW_GAME,
         {std::make_pair(CustomMessageBox::Options::YES,
                         [this]() { startNewGame(); }),
          std::make_pair(CustomMessageBox::Options::NO,
@@ -31,18 +33,6 @@ void Game::start() {
 
   menu.addToGui(components.gui);
 }
-
-// void Game::createCustomMessageBox(
-//     MsgBoxFactory::MessageBoxType type,
-//     std::vector<std::pair<CustomMessageBox::Options, std::function<void()>>>
-//         buttons) {
-//   auto msgbox =
-//       MsgBoxFactory::createCustomMessageBox(components.window, type,
-//       buttons);
-//   components.gui.add(msgbox);
-//   menu.getLayout()->blockButtons();
-//   active_messagebox = msgbox;
-// }
 
 void Game::startNewGame() {
   menu.remove();
@@ -62,8 +52,8 @@ void Game::update() {
   }
 
   if (main_game.isInitialized()) {
-    main_game.movePlayer();
-    // main_game.checkPause();
+    // main_game.movePlayer();
+    main_game.checkPause();
   }
 }
 void Game::run() {
@@ -82,12 +72,10 @@ void Game::poolEvents() {
     if (components.evnt.type == sf::Event::Closed) {
       components.window.close();
     }
-    if (components.evnt.type == sf::Event::KeyReleased) {
-      if (components.evnt.key.code == sf::Keyboard::X) {
-        std::cout << "helloxxx222" << std::endl;
-      }
-    }
+    // if (components.evnt.type == sf::Event::KeyPressed) {
     update();
+    // }
+    // update();
 
     // if (components.evnt.type == sf::Event::Resized) {
     //   keepWidgetsPosition();

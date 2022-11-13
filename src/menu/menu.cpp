@@ -139,23 +139,22 @@ void Menu<OPT_ENUM>::setLayoutRender(const std::string &object_name) {
 // }
 
 template <typename OPT_ENUM> void Menu<OPT_ENUM>::moveMenu() {
-  if (components.keyboard.wasClickedYet(sf::Keyboard::Down)) {
+  if (components.isClicked(sf::Keyboard::Down)) {
     std::cout << "hello" << std::endl;
     focuseNextButton();
-    components.keyboard.clickAndUnclickKey(sf::Keyboard::Down);
+    // components.keyboard.clickAndUnclickKey(sf::Keyboard::Down);
   }
-  if (components.keyboard.wasClickedYet(sf::Keyboard::Up)) {
+  if (components.isClicked(sf::Keyboard::Up)) {
     focusePreviousButton();
-    components.keyboard.clickAndUnclickKey(sf::Keyboard::Up);
+    // components.keyboard.clickAndUnclickKey(sf::Keyboard::Up);
   }
 }
 
 template <typename OPT_ENUM> void Menu<OPT_ENUM>::setOptionUsingKeyBoard() {
-  if (components.keyboard.wasClickedYet(sf::Keyboard::Enter) &&
-      isCurrentOptionInButtons()) {
+  if (components.isClicked(sf::Keyboard::Enter) && isCurrentOptionInButtons()) {
 
     buttons_functions.at(current_option->first)();
-    components.keyboard.clickAndUnclickKey(sf::Keyboard::Enter);
+    // components.keyboard.clickAndUnclickKey(sf::Keyboard::Enter);
   }
 }
 

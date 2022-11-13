@@ -16,5 +16,7 @@ struct MainGameComponents {
   MainGameComponents(sf::RenderWindow &window_);
   const bool isOpened() const;
   void setBackground(const std::string &texture_path);
+  bool isClicked(sf::Keyboard::Key key);
+  bool isReleased(sf::Keyboard::Key key);
   void start();
 };
