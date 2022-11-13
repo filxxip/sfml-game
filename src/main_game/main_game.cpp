@@ -74,12 +74,11 @@ const bool MainGame::isPause() const { return state == State::PAUSE; }
 void MainGame::createExitMessageBox() {
   auto stay_pair = std::make_pair(CustomMessageBox::Options::STAY, [this]() {
     state = State::RUNNING;
-    components.keyboard.setNotClicked(sf::Keyboard::Escape);
+    // components.keyboard.setNotClicked(sf::Keyboard::Escape);
     // active_messagebox.destroy();
   });
-
   auto exit_pair = std::make_pair(CustomMessageBox::Options::EXIT, [this]() {
-    components.keyboard.setNotClicked(sf::Keyboard::Escape);
+    // components.keyboard.setNotClicked(sf::Keyboard::Escape);
     remove();
   });
   auto messagebox = MsgBoxFactory::createCustomMessageBox(

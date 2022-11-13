@@ -9,8 +9,10 @@ MainGameComponents::MainGameComponents(sf::RenderWindow &window_)
 const bool MainGameComponents::isOpened() const { return window.isOpen(); }
 
 void MainGameComponents::start() {
+  // window.setKeyRepeatEnabled(false);
   gui.mainLoop();
   window.setVerticalSyncEnabled(true);
+  // window.setKeyRepeatEnabled(false);
   window.setFramerateLimit(60);
   window.create(sf::VideoMode(WindowData::WIDTH, WindowData::HEIGHT),
                 WindowData::TITLE, sf::Style::Titlebar | sf::Style::Close);

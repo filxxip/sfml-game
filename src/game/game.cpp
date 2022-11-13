@@ -51,6 +51,11 @@ void Game::startNewGame() {
 }
 
 void Game::update() {
+  // if (components.evnt.type == sf::Event::KeyPressed) {
+  //   if (components.evnt.key.code == sf::Keyboard::Down) {
+  //     std::cout << "helloxxx" << std::endl;
+  //   }
+  // }
   if (menu.isInitialized()) {
     menu.getLayout()->moveMenu();
     menu.checkMsgBox();
@@ -58,14 +63,16 @@ void Game::update() {
 
   if (main_game.isInitialized()) {
     main_game.movePlayer();
-    main_game.checkPause();
+    // main_game.checkPause();
   }
 }
 void Game::run() {
   while (components.isOpened()) {
     poolEvents();
     draw();
-    update();
+    if (main_game.isInitialized()) {
+      main_game.movePlayer();
+    }
   }
 }
 
@@ -75,6 +82,13 @@ void Game::poolEvents() {
     if (components.evnt.type == sf::Event::Closed) {
       components.window.close();
     }
+    if (components.evnt.type == sf::Event::KeyReleased) {
+      if (components.evnt.key.code == sf::Keyboard::X) {
+        std::cout << "helloxxx222" << std::endl;
+      }
+    }
+    update();
+
     // if (components.evnt.type == sf::Event::Resized) {
     //   keepWidgetsPosition();
     // }
