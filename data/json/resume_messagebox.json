@@ -1,0 +1,9 @@
+{
+    "size_width": 100,
+    "size_height": 50,
+    "button_render_name": "EmptyMessageBoxButtons",
+    "messagebox_render_name": "EmptyMessageBox",
+    "content": "resume",
+    "title": "",
+    "text_size": 18
+}

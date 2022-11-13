@@ -24,7 +24,7 @@ public:
                         std::function<void()> command);
   void addToGui(tgui::Gui &gui);
   void createCustomMessageBox(
-      MsgBoxFactory::MessageBoxType type,
+      const std::string &path,
       std::vector<std::pair<CustomMessageBox::Options, std::function<void()>>>
           buttons);
 

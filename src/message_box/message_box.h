@@ -7,6 +7,7 @@
 #include <SFML/Graphics.hpp>
 #include <TGUI/Loading/Theme.hpp>
 #include <TGUI/Widgets/MessageBox.hpp>
+#include <nlohmann/json.hpp>
 
 struct MessageBoxButton {
   std::string name;
@@ -82,22 +83,23 @@ public:
 
 class MsgBoxFactory {
 public:
-  enum class MessageBoxType { APP_EXIT, GAME_EXIT, NEW_GAME, RESUME_GAME };
   static CustomMessageBox::Ptr create(MainGameComponents &components,
-                                      MessageBoxType type);
-  static CustomMessageBox::Ptr createCustomMessageBox(
-      MainGameComponents &components, MessageBoxType type,
+                                      const std::string &file_path);
+  static CustomMessageBox::Ptr create(
+      MainGameComponents &components, const std::string &file_path,
       std::vector<std::pair<CustomMessageBox::Options, std::function<void()>>>
           buttons);
 
 private:
-  enum class MsgBoxMapTypes { TITLE, CONTENT, RENDERER_MAIN, RENDERER_BUTTON };
+  static CustomMessageBox::Ptr
+  createCustomMessageBox(MainGameComponents &components,
+                         nlohmann::json json_file);
+  static CustomMessageBox::Ptr createCustomMessageBox(
+      MainGameComponents &components, nlohmann::json json_file,
+      std::vector<std::pair<CustomMessageBox::Options, std::function<void()>>>
+          buttons);
 
-  static const std::unordered_map<
-      MessageBoxType, std::unordered_map<MsgBoxMapTypes, std::string>>
-      factory_data;
+  static nlohmann::json getJson(const std::string &path);
 
   static tgui::Theme theme;
-  static CustomMessageBox::Ptr createBase(MainGameComponents &components,
-                                          MessageBoxType type);
 };

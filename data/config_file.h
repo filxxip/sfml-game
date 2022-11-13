@@ -21,15 +21,18 @@ namespace RendererNames {
 constexpr char DEFAULT_BUTTON[] = "DefaultButton";
 constexpr char ACTIVE_BUTTON[] = "ActiveButton";
 constexpr char LAYOUT[] = "Layout";
-constexpr char MSGBOX[] = "ExitMessageBox";
-constexpr char EMPTY_MSGBOX[] = "EmptyMessageBox";
-constexpr char MSGBOX_BUTTON[] = "ExitMessageBoxButtons";
-constexpr char EMPTY_MSGBOX_BUTTON[] = "EmptyMessageBoxButtons";
 } // namespace RendererNames
 
 namespace KeyboardData {
 constexpr int THREAD_TIME = 300;
 }
+
+namespace Json {
+constexpr char RESUME[] = "../data/json/resume_messagebox.json";
+constexpr char NEW_GAME[] = "../data/json/new_game_messagebox.json";
+constexpr char EXIT_GAME[] = "../data/json/exit_game_messagebox.json";
+constexpr char EXIT_APP[] = "../data/json/exit_messagebox.json";
+} // namespace Json
 
 namespace MainMenuData {
 constexpr int PICTURE_X_MOVEMENT = 0;
@@ -48,19 +51,3 @@ constexpr char RESULT[] = "See best results";
 constexpr char OPTIONS[] = "Options";
 } // namespace ButtonsText
 } // namespace MainMenuData
-
-namespace MessageBoxData {
-constexpr tgui::Vector2f BASE_SIZE{250, 110};
-constexpr tgui::Vector2f EMPTY_SIZE{140, 60};
-constexpr int TEXT_SIZE = 18;
-constexpr char EXIT_TITLE[] = "Exit App";
-constexpr char NEW_GAME_TITLE[] = "Starting New Game";
-constexpr char EXIT_GAME_TITLE[] = "Exit Game";
-constexpr char RESUME_GAME_TITLE[] = "Resume Game";
-constexpr char EMPTY_CONTENT[] = "";
-constexpr char EMPTY_TITLE[] = "";
-constexpr char EXIT_CONTENT[] = "Are you sure the exit this app?";
-constexpr char NEW_GAME_CONTENT[] = "Are you sure to start new game?";
-constexpr char EXIT_GAME_CONTENT[] = "Are you sure to finish this game?";
-
-} // namespace MessageBoxData
