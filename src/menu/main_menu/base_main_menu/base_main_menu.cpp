@@ -38,11 +38,9 @@ void MainMenu::checkMsgBox() {
 
 void MainMenu::initialize() {
   components.background.setImage(Paths::TEXTURE_PATH);
-  std::cout << components.gui.getWidgets().size() << std::endl;
   components.gui.add(main_menu_layout);
   components.gui.add(title_picture);
   main_menu_layout->unblockButtons();
-  std::cout << components.gui.getWidgets().size() << std::endl;
 }
 void MainMenu::remove() {
   components.gui.remove(main_menu_layout);

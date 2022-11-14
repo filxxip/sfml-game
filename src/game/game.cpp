@@ -2,6 +2,7 @@
 #include "../../data/config_file.h"
 #include <TGUI/Signal.hpp>
 #include <TGUI/Widgets/MessageBox.hpp>
+#include <ctime>
 #include <iostream>
 
 Game::Game(sf::RenderWindow &window_)
@@ -54,6 +55,7 @@ void Game::update() {
   if (main_game.isInitialized()) {
     // main_game.movePlayer();
     main_game.checkPause();
+    main_game.doPlayerActivities();
   }
 }
 void Game::run() {
@@ -62,6 +64,7 @@ void Game::run() {
     draw();
     if (main_game.isInitialized()) {
       main_game.movePlayer();
+      main_game.checkBombs();
     }
   }
 }
@@ -72,14 +75,14 @@ void Game::poolEvents() {
     if (components.evnt.type == sf::Event::Closed) {
       components.window.close();
     }
-    // if (components.evnt.type == sf::Event::KeyPressed) {
-    update();
-    // }
-    // update();
+    if (components.evnt.type == sf::Event::KeyPressed ||
+        components.evnt.type == sf::Event::KeyReleased) {
+      std::clock_t start = std::clock();
 
-    // if (components.evnt.type == sf::Event::Resized) {
-    //   keepWidgetsPosition();
-    // }
+      update();
+      double duration = (std::clock() - start);
+      std::cout << duration << "hah" << std::endl;
+    }
   }
 }
 

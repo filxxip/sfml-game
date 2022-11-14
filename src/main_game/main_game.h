@@ -2,7 +2,8 @@
 
 #include "../game/main_game_components/main_game_components.h"
 #include "../message_box/message_box.h"
-#include "../player/player.h"
+#include "down_panel/down_panel.h"
+#include "player/player.h"
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <TGUI/Backend/SFML-Graphics.hpp>
@@ -28,10 +29,14 @@ public:
   const bool isRunning() const;
   const bool isPause() const;
 
+  void doPlayerActivities();
+  void checkBombs();
+
 private:
   MainGameComponents &components;
   State state = State::RUNNING;
   Player player;
+  DownPanel panel;
 
 public:
   tgui::Signal own_signal;

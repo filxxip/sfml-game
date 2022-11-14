@@ -3,19 +3,23 @@
 #include <nlohmann/json.hpp>
 
 MainGame::MainGame(MainGameComponents &components_)
-    : components(components_), player(components_),
-      own_signal("ClosingWindow") {}
+    : components(components_), player(components_), own_signal("ClosingWindow"),
+      panel(components) {
+  panel.setPosition(components.window.getSize().y - 70);
+}
 
 void MainGame::initialize() {
   state = State::RUNNING;
-  components.gui.add(player.getImage());
+  // components.gui.add(player.getImage());
   player.initialize();
+  panel.initialize();
   components.background.setImage(Paths::GAME_BACKGROUND);
 }
 
 void MainGame::remove() {
   // active_messagebox.destroy();
-  components.gui.remove(player.getImage());
+  player.removeEachItem();
+  panel.remove();
   own_signal.emit(&customwidget);
 }
 
@@ -45,33 +49,41 @@ void MainGame::movePlayer() {
   }
 }
 
+void MainGame::doPlayerActivities() {
+  if (isRunning()) {
+    if (components.isReleased(sf::Keyboard::Space)) {
+      player.putBomb();
+    }
+    if (components.isClicked(sf::Keyboard::LControl)) {
+      player.setNextBombOption();
+      panel.setBomb(player.getCurrentBomb());
+    }
+    // player.checkBombsExpired();
+  }
+}
+
+void MainGame::checkBombs() { player.checkBombsExpired(isRunning()); }
+
 void MainGame::checkPause() {
   if (isRunning() && active_messagebox->expired() &&
       components.isClicked(sf::Keyboard::Escape)) {
-    std::cout << "xxxx" << std::endl;
     state = State::PAUSE;
     createExitMessageBox();
     components.keyboard.setClicked(sf::Keyboard::Escape);
     components.keyboard.setNotClickedAfterDelay(sf::Keyboard::Escape);
+    return;
   }
 
   if (isRunning() && active_messagebox->expired() &&
       components.isClicked(sf::Keyboard::P)) {
     state = State::PAUSE;
-    // components.keyboard.clickAndUnclickKey(sf::Keyboard::P);
     createPauseMessageBox();
+    return;
   }
-  std::cout << (components.keyboard.isNotClicked(sf::Keyboard::Escape))
-            << std::endl;
-
-  std::cout << (!active_messagebox->expired()) << std::endl;
   if (isPause() && !active_messagebox->expired() &&
       components.isClicked(sf::Keyboard::Escape) &&
       components.keyboard.isNotClicked(sf::Keyboard::Escape)) {
     state = State::RUNNING;
-    std::cout << "xxxsdsd" << std::endl;
-    // components.keyboard.clickAndUnclickKey(sf::Keyboard::Escape);
-    // active_messagebox.destroy();
   }
   active_messagebox.checkKeyboard();
 }

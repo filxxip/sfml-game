@@ -23,8 +23,14 @@ add_executable(${PROJECT_NAME}
     src/game/main_game_components/main_game_components.cpp
     src/picture/picture.cpp
     src/position_widget_menager/position_widget_menager.cpp
-    src/player/player.cpp
+    src/main_game/player/player.cpp
     src/main_game/main_game.cpp
+    src/main_game/bomb/bomb.cpp
+    src/main_game/bomb/click_bomb/click_bomb.cpp
+    src/main_game/bomb/time_bomb/standard_time_bomb.cpp
+    src/main_game/bomb/time_bomb/random_bomb/random_bomb.cpp
+    src/main_game/bomb/time_bomb/heart_bomb/heart_bomb.cpp
+    src/main_game/down_panel/down_panel.cpp
     sfml.cpp
 )
 

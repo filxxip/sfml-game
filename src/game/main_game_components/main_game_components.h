@@ -19,4 +19,5 @@ struct MainGameComponents {
   bool isClicked(sf::Keyboard::Key key);
   bool isReleased(sf::Keyboard::Key key);
   void start();
+  void addOver(tgui::Widget::Ptr down_widget, tgui::Widget::Ptr up_widget);
 };

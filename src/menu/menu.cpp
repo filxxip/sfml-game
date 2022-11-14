@@ -140,7 +140,6 @@ void Menu<OPT_ENUM>::setLayoutRender(const std::string &object_name) {
 
 template <typename OPT_ENUM> void Menu<OPT_ENUM>::moveMenu() {
   if (components.isClicked(sf::Keyboard::Down)) {
-    std::cout << "hello" << std::endl;
     focuseNextButton();
     // components.keyboard.clickAndUnclickKey(sf::Keyboard::Down);
   }

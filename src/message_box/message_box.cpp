@@ -107,17 +107,17 @@ MsgBoxFactory::createCustomMessageBox(MainGameComponents &components,
                                       nlohmann::json json_file) {
   auto msgbox = CustomMessageBox::create(components);
   msgbox->setPositionLocked(true);
-  msgbox->setSize(json_file.at("size_width").get<int>(),
-                  json_file.at("size_height").get<int>());
+  msgbox->setSize(json_file.at(JsonNames::SIZE_WIDTH_).get<int>(),
+                  json_file.at(JsonNames::SIZE_HEIGHT).get<int>());
   msgbox->setTitleTextSize(json_file.at("text_size").get<int>());
   msgbox->setLabelAlignment(tgui::MessageBox::Alignment::Center);
   PositionWidgetMenager::setMiddle(components.window, msgbox);
-  msgbox->setText(json_file.at("content").get<std::string>());
-  msgbox->setTitle(json_file.at("title").get<std::string>());
+  msgbox->setText(json_file.at(JsonNames::CONTENT).get<std::string>());
+  msgbox->setTitle(json_file.at(JsonNames::TITLE).get<std::string>());
   msgbox->setRenderer(theme.getRenderer(
-      json_file.at("messagebox_render_name").get<std::string>()));
-  msgbox->getRenderer()->setButton(
-      theme.getRenderer(json_file.at("button_render_name").get<std::string>()));
+      json_file.at(JsonNames::MSGBOX_NAME).get<std::string>()));
+  msgbox->getRenderer()->setButton(theme.getRenderer(
+      json_file.at(JsonNames::MSGBOX_BUTTON_NAME).get<std::string>()));
   return msgbox;
 }
 

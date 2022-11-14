@@ -30,3 +30,10 @@ bool MainGameComponents::isClicked(sf::Keyboard::Key key) {
 bool MainGameComponents::isReleased(sf::Keyboard::Key key) {
   return evnt.type == sf::Event::KeyReleased && evnt.key.code == key;
 }
+
+void MainGameComponents::addOver(tgui::Widget::Ptr down_widget,
+                                 tgui::Widget::Ptr up_widget) {
+  gui.add(down_widget);
+  gui.remove(up_widget);
+  gui.add(up_widget);
+}

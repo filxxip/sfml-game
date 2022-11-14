@@ -11,6 +11,13 @@ constexpr char TITLE[] = "Bomberman";
 namespace Paths {
 constexpr char TEXTURE_PATH[] = "../images/texture.jpg";
 constexpr char BOMBER_TITLE_PATH[] = "../images/bomber.png";
+constexpr char BOMB_PATH[] = "../images/bomb.png";
+constexpr char MYSTERY_BOMB_PATH[] = "../images/mystery_bomb.png";
+constexpr char HEART_PANEL_PATH[] = "../images/downheartpanel.png";
+constexpr char RED_HEART_PATH[] = "../images/red_heart.png";
+constexpr char GREY_HEART_PATH[] = "../images/grey_heart.png";
+constexpr char CLICK_BOMB_PATH[] = "../images/click_bomb.png";
+constexpr char HEART_BOMB_PATH[] = "../images/heart_bomb.png";
 constexpr char BOMBER_PLAYER[] = "../images/bomber_player.png";
 constexpr char GAME_BACKGROUND[] = "../images/game_background.jpg";
 constexpr char MENU_STYLE[] = "../themes/menu.style";
@@ -33,6 +40,15 @@ constexpr char NEW_GAME[] = "../data/json/new_game_messagebox.json";
 constexpr char EXIT_GAME[] = "../data/json/exit_game_messagebox.json";
 constexpr char EXIT_APP[] = "../data/json/exit_messagebox.json";
 } // namespace Json
+
+namespace JsonNames {
+constexpr char SIZE_WIDTH_[] = "size_width";
+constexpr char SIZE_HEIGHT[] = "size_height";
+constexpr char TITLE[] = "title";
+constexpr char CONTENT[] = "content";
+constexpr char MSGBOX_NAME[] = "messagebox_render_name";
+constexpr char MSGBOX_BUTTON_NAME[] = "button_render_name";
+} // namespace JsonNames
 
 namespace MainMenuData {
 constexpr int PICTURE_X_MOVEMENT = 0;
