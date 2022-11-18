@@ -22,6 +22,7 @@ add_executable(${PROJECT_NAME}
     src/game/custom_keyboard/custom_keyboard.cpp
     src/game/main_game_components/main_game_components.cpp
     src/picture/picture.cpp
+    src/picture/game_picture.cpp
     src/position_widget_menager/position_widget_menager.cpp
     src/main_game/player/player.cpp
     src/main_game/main_game.cpp
@@ -31,6 +32,8 @@ add_executable(${PROJECT_NAME}
     src/main_game/bomb/time_bomb/random_bomb/random_bomb.cpp
     src/main_game/bomb/time_bomb/heart_bomb/heart_bomb.cpp
     src/main_game/down_panel/down_panel.cpp
+    src/main_game/box/box.cpp
+    src/main_game/box/box_menager.cpp
     sfml.cpp
 )
 

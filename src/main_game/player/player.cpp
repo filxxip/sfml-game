@@ -8,24 +8,29 @@
 
 Player::Player(MainGameComponents &components_)
     : components(components_),
-      picture(CustomPicture::create(components.window, Paths::BOMBER_PLAYER)) {}
+      picture(GamePicture::create(components.window, Paths::BOMBER_PLAYER)) {}
 
-const CustomPicture::Ptr &Player::getImage() const { return picture; }
+const GamePicture::Ptr &Player::getImage() const { return picture; }
 
 // void Player::setVisible(bool status) { picture->setVisible(status); }
 
 // bool Player::isVisible() const { return picture->isVisible(); }
 
 void Player::move(Movement direction) {
+  auto new_position = getPredictedNewPosition(direction);
+  if (isXValid(new_position.x.getValue()) &&
+      isYValid(new_position.y.getValue())) {
+    picture->setPosition(new_position);
+  }
+}
+
+const tgui::Layout2d Player::getPredictedNewPosition(Movement direction) {
   auto [x, y] = movement_keyboard_values.at(direction);
   auto [current_x, current_y] = picture->getPosition();
   auto new_x = current_x + speed_rate * x;
   auto new_y = current_y + speed_rate * y;
-  if (isXValid(new_x) && isYValid(new_y)) {
-    picture->setPosition(new_x, new_y);
-  }
+  return tgui::Layout2d(new_x, new_y);
 }
-
 void Player::initialize() {
   components.gui.add(picture);
   picture->setPosition(100, 100);
@@ -35,10 +40,10 @@ void Player::initialize() {
 void Player::remove() { components.gui.remove(picture); }
 
 bool Player::isYValid(double new_y) const {
-  return new_y > 0 && new_y < components.window.getSize().y;
+  return new_y > 0 && new_y < components.window.getSize().y - 40;
 }
 bool Player::isXValid(double new_x) const {
-  return new_x > 0 && new_x < components.window.getSize().x;
+  return new_x > 0 && new_x < components.window.getSize().x - 40;
 }
 
 void Player::putBomb() {

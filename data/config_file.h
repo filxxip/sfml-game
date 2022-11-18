@@ -22,6 +22,8 @@ constexpr char BOMBER_PLAYER[] = "../images/bomber_player.png";
 constexpr char GAME_BACKGROUND[] = "../images/game_background.jpg";
 constexpr char MENU_STYLE[] = "../themes/menu.style";
 constexpr char MESSAGE_BOX_STYLE[] = "../themes/messagebox.style";
+constexpr char BOX_PATH[] = "../images/box.png";
+constexpr char STONE[] = "../images/stone.png";
 } // namespace Paths
 
 namespace RendererNames {
@@ -87,3 +89,8 @@ constexpr int BOMB_SIZE = 50;
 constexpr int DEFAULT_HEART_NUMBER = 3;
 constexpr int DELTA_PANEL_Y_POSITION = 70;
 } // namespace PanelData
+
+namespace BoxData {
+constexpr int SIZE = 20;
+constexpr int DEFAULT_BOX_SPACES = 15;
+} // namespace BoxData

@@ -74,7 +74,6 @@ void Game::poolEvents() {
 
       update();
       double duration = (std::clock() - start);
-      std::cout << duration << "hah" << std::endl;
     }
   }
 }
