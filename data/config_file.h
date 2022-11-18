@@ -70,15 +70,6 @@ constexpr char OPTIONS[] = "Options";
 } // namespace ButtonsText
 } // namespace MainMenuData
 
-namespace BombData {
-constexpr int STANDARD_LIVE_TIME = 3000;
-constexpr int MINIMUM_LIVE_TIME = 1000;
-constexpr int MAXIMUM_RANDOM_LIVE_TIME = 10000;
-constexpr int SNAPSHOTTING_START = 1000;
-constexpr int SNAPSHOTTING_PERIOD = 100;
-constexpr int SIZE = 30;
-} // namespace BombData
-
 namespace PanelData {
 constexpr int HEART_X_POSITION = 100;
 constexpr int BOMB_SUP_POS = 150;
@@ -91,6 +82,20 @@ constexpr int DELTA_PANEL_Y_POSITION = 70;
 } // namespace PanelData
 
 namespace BoxData {
-constexpr int SIZE = 20;
+constexpr int SIZE = 35;
 constexpr int DEFAULT_BOX_SPACES = 15;
+constexpr int DELTA_PANEL_Y_POSITION = PanelData::DELTA_PANEL_Y_POSITION + 20;
 } // namespace BoxData
+
+namespace BombData {
+constexpr int STANDARD_LIVE_TIME = 3000;
+constexpr int MINIMUM_LIVE_TIME = 1000;
+constexpr int MAXIMUM_RANDOM_LIVE_TIME = 10000;
+constexpr int SNAPSHOTTING_START = 1000;
+constexpr int SNAPSHOTTING_PERIOD = 100;
+constexpr int SIZE = BoxData::SIZE - 10;
+} // namespace BombData
+
+namespace PlayerData {
+constexpr int SIZE = BoxData::SIZE - 7;
+}

@@ -69,22 +69,34 @@ void BoxMenager::inittializeBoxes(int count) {
 void BoxMenager::addBox(double position_x, double position_y) {
   tgui::Layout2d lay(position_x, position_y);
   auto box = Box(components);
-  auto index = std::find_if(
-      menager_vector.begin(), menager_vector.end(),
-      [&lay, size = box.getPicture()->getSize()](auto &menager_box) {
-        return menager_box.canBeInSpace(lay, size);
-      });
+  //   auto index = std::find_if(
+  //       menager_vector.begin(), menager_vector.end(),
+  //       [&lay, size = box.getPicture()->getSize()](auto &menager_box) {
+  //         return menager_box.canBeInSpace(lay, size);
+  //       });
 
-  if (index != menager_vector.end()) {
-    box.put(position_x, position_y);
-    index->addBox(std::move(box));
+  for (auto &menager_box : menager_vector) {
+    if (menager_box.canBeInSpace(lay, box.getPicture()->getSize())) {
+      menager_box.addBox(std::move(
+          box)); // problem z przechodzeniem miedyz boxami niektore boxy
+                 // zaczynaja sie w innym niz mozna w nie wejsc, dobrym pomyslem
+                 // jest shared pointer zamast oryginalnego obiektu w vectorze w
+                 // kazdym boxie wtedy gdy nawet maly punkt danej instanci box
+                 // znajdzie sie w jakims wiekszym boxie zostanie zarty w
+                 // docelowym wiekszym boxie
+    }
   }
+
+  //   if (index != menager_vector.end()) {
+  box.put(position_x, position_y);
+  //     index->addBox(std::move(box));
+  //   }
 }
 
 void BoxMenager::createEdges() {
   double max_x = components.window.getSize().x;
   double max_y =
-      components.window.getSize().y - PanelData::DELTA_PANEL_Y_POSITION;
+      components.window.getSize().y - BoxData::DELTA_PANEL_Y_POSITION;
   auto elements_number_x = static_cast<int>(max_x / BoxData::SIZE);
   auto elements_number_y = static_cast<int>(max_y / BoxData::SIZE);
 
