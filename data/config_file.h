@@ -67,3 +67,23 @@ constexpr char RESULT[] = "See best results";
 constexpr char OPTIONS[] = "Options";
 } // namespace ButtonsText
 } // namespace MainMenuData
+
+namespace BombData {
+constexpr int STANDARD_LIVE_TIME = 3000;
+constexpr int MINIMUM_LIVE_TIME = 1000;
+constexpr int MAXIMUM_RANDOM_LIVE_TIME = 10000;
+constexpr int SNAPSHOTTING_START = 1000;
+constexpr int SNAPSHOTTING_PERIOD = 100;
+constexpr int SIZE = 30;
+} // namespace BombData
+
+namespace PanelData {
+constexpr int HEART_X_POSITION = 100;
+constexpr int BOMB_SUP_POS = 150;
+constexpr int HEARTS_SIZE = 30;
+constexpr int HEARTS_MARGIN = 15;
+constexpr int HEARTS_SPACING = 10;
+constexpr int BOMB_SIZE = 50;
+constexpr int DEFAULT_HEART_NUMBER = 3;
+constexpr int DELTA_PANEL_Y_POSITION = 70;
+} // namespace PanelData

@@ -11,23 +11,22 @@ void StandardTimeBomb::measure(bool isrunning) {
 }
 
 StandardTimeBomb::StandardTimeBomb(MainGameComponents &components)
-    : Bomb(components), life_span(3000), boms_lasts(0) {
+    : Bomb(components), life_span(BombData::STANDARD_LIVE_TIME), boms_lasts(0) {
   auto start = time::now();
   last_measure = std::move(start);
 }
 
 void StandardTimeBomb::checkSnapShot() {
-  if (life_span - boms_lasts < 500) {
-    picture->setVisible(false);
-  }
-  if (life_span - boms_lasts < 400) {
-    picture->setVisible(true);
-  }
-  if (life_span - boms_lasts < 300) {
-    picture->setVisible(false);
-  }
-  if (life_span - boms_lasts < 200) {
-    picture->setVisible(true);
+  bool condition = false;
+  auto start = 0;
+  auto periods_number = static_cast<int>(BombData::SNAPSHOTTING_START /
+                                         BombData::SNAPSHOTTING_PERIOD);
+  for (int i = 0; i < periods_number; i++) {
+    if (life_span - boms_lasts <
+        BombData::SNAPSHOTTING_START - i * BombData::SNAPSHOTTING_PERIOD) {
+      picture->setVisible(condition);
+      condition = !condition;
+    }
   }
 }
 

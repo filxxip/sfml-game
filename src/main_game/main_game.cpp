@@ -4,9 +4,7 @@
 
 MainGame::MainGame(MainGameComponents &components_)
     : components(components_), player(components_), own_signal("ClosingWindow"),
-      panel(components) {
-  panel.setPosition(components.window.getSize().y - 70);
-}
+      panel(components) {}
 
 void MainGame::initialize() {
   state = State::RUNNING;
@@ -57,6 +55,14 @@ void MainGame::doPlayerActivities() {
     if (components.isClicked(sf::Keyboard::LControl)) {
       player.setNextBombOption();
       panel.setBomb(player.getCurrentBomb());
+    }
+    if (components.isClicked(sf::Keyboard::Q)) {
+      // player.setNextBombOption();
+      panel.addHeart();
+    }
+    if (components.isClicked(sf::Keyboard::W)) {
+      // player.setNextBombOption();
+      panel.removeHeart();
     }
     // player.checkBombsExpired();
   }

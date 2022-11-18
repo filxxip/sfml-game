@@ -11,7 +11,7 @@ const std::unordered_map<Bomb::BombType, std::string> Bomb::bomb_names{
 Bomb::Bomb(MainGameComponents &components_)
     : components(components_),
       picture(CustomPicture::create(components.window, Paths::BOMB_PATH)) {
-  picture->setSize({30, 30});
+  picture->setSize({BombData::SIZE, BombData::SIZE});
 }
 
 void Bomb::putUnder(tgui::Widget::Ptr widget) {

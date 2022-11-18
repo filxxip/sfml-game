@@ -3,7 +3,8 @@
 RandomTimeBomb::RandomTimeBomb(MainGameComponents &components_)
     : StandardTimeBomb(components_) {
   picture->setPicture(Paths::MYSTERY_BOMB_PATH);
-  setRandomTime(1000, 6000);
+  setRandomTime(BombData::MINIMUM_LIVE_TIME,
+                BombData::MAXIMUM_RANDOM_LIVE_TIME);
 }
 
 void RandomTimeBomb::setRandomTime(int start, int end) {
