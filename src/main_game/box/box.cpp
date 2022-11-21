@@ -1,9 +1,9 @@
 #include "box.h"
 #include "../../../data/config_file.h"
 
-Box::Box(MainGameComponents &components_)
+Box::Box(MainGameComponents &components_, const std::string &path)
     : components(components_),
-      picture(GamePicture::create(components.window, Paths::BOX_PATH)) {
+      picture(GamePicture::create(components.window, path)) {
   picture->setSize({BoxData::SIZE, BoxData::SIZE});
 }
 

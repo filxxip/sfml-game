@@ -24,25 +24,25 @@ bool BoxMenagerPart::canBeInSpace(const tgui::Layout2d &layout,
     return false;
   }
   return true;
-
-  //   return ((x_range.first <= x && x_range.second > x) ||
-  //           (x_range.first <= x_max && x_range.second > x_max)) &&
-  //          ((y_range.first <= y && y_range.second > y) ||
-  //           (y_range.first <= y_max && y_range.second > y_max));
 }
 
-void BoxMenagerPart::addBox(Box &&box) { box_vector.push_back(std::move(box)); }
+void BoxMenagerPart::addBox(Box::Ptr box) {
+  box_vector.push_back(std::move(box));
+}
 
 bool BoxMenagerPart::isWidgetInsideAnyBox(const tgui::Layout2d &layout,
                                           const tgui::Layout2d &size) const {
-  auto index = std::find_if(
-      box_vector.begin(), box_vector.end(),
-      [&layout, &size](auto &box) { return box.isWidgetInside(layout, size); });
+  auto index = std::find_if(box_vector.begin(), box_vector.end(),
+                            [&layout, &size](auto &box) {
+                              return box->isWidgetInside(layout, size);
+                            });
   return index != box_vector.end();
 }
 
 BoxMenager::BoxMenager(MainGameComponents &components_)
-    : components(components_) {}
+    : box_size(BoxData::SIZE), components(components_) {
+  createBoxesData();
+}
 
 void BoxMenager::inittializeBoxes(int count) {
   double width = components.window.getSize().x;
@@ -66,40 +66,13 @@ void BoxMenager::inittializeBoxes(int count) {
   }
 }
 
-void BoxMenager::addBox(double position_x, double position_y) {
-  tgui::Layout2d lay(position_x, position_y);
-  auto box = Box(components);
-  //   auto index = std::find_if(
-  //       menager_vector.begin(), menager_vector.end(),
-  //       [&lay, size = box.getPicture()->getSize()](auto &menager_box) {
-  //         return menager_box.canBeInSpace(lay, size);
-  //       });
-
-  for (auto &menager_box : menager_vector) {
-    if (menager_box.canBeInSpace(lay, box.getPicture()->getSize())) {
-      menager_box.addBox(std::move(
-          box)); // problem z przechodzeniem miedyz boxami niektore boxy
-                 // zaczynaja sie w innym niz mozna w nie wejsc, dobrym pomyslem
-                 // jest shared pointer zamast oryginalnego obiektu w vectorze w
-                 // kazdym boxie wtedy gdy nawet maly punkt danej instanci box
-                 // znajdzie sie w jakims wiekszym boxie zostanie zarty w
-                 // docelowym wiekszym boxie
-    }
-  }
-
-  //   if (index != menager_vector.end()) {
-  box.put(position_x, position_y);
-  //     index->addBox(std::move(box));
-  //   }
-}
-
-void BoxMenager::createEdges() {
+void BoxMenager::createBoxesData() {
   double max_x = components.window.getSize().x;
   double max_y =
       components.window.getSize().y - BoxData::DELTA_PANEL_Y_POSITION;
   auto elements_number_x = static_cast<int>(max_x / BoxData::SIZE);
   auto elements_number_y = static_cast<int>(max_y / BoxData::SIZE);
-
+  max_indexes = {elements_number_x - 1, elements_number_y - 1};
   double break_space_x = elements_number_x > 1
                              ? (max_x - elements_number_x * BoxData::SIZE) /
                                    static_cast<double>(elements_number_x - 1)
@@ -109,18 +82,51 @@ void BoxMenager::createEdges() {
                                    static_cast<double>(elements_number_y - 1)
                              : break_space_y = 0;
 
-  for (int i = 0; i < elements_number_x; i++) {
-    addBox(i * break_space_x + i * BoxData::SIZE, 0);
-    addBox(i * break_space_x + i * BoxData::SIZE, max_y - BoxData::SIZE);
+  box_element_size = {break_space_x + box_size,
+                      break_space_y + box_size}; // gdzies to trzeba przezucic
+}
+
+void BoxMenager::addBox(double position_x, double position_y) {
+  tgui::Layout2d lay(position_x, position_y);
+  auto box = BoxFactory::create(components, BoxFactory::Types::STONE);
+  for (auto &menager_box : menager_vector) {
+    if (menager_box.canBeInSpace(lay, box->getPicture()->getSize())) {
+      menager_box.addBox(box);
+    }
   }
-  for (int i = 1; i < elements_number_y - 1; i++) {
-    addBox(0, i * break_space_y + i * BoxData::SIZE);
-    addBox(max_x - BoxData::SIZE, i * break_space_y + i * BoxData::SIZE);
+
+  box->put(position_x, position_y);
+}
+
+void BoxMenager::addBox(std::pair<int, int> indexes) {
+  addBox(indexes.first * box_element_size.first,
+         indexes.second * box_element_size.second);
+}
+
+void BoxMenager::createEdges() {
+
+  addBox(200, 200);
+  addBox({5, 2});
+  addBox({5, 1});
+  addBox({5, 3});
+  addBox({5, 4});
+  addBox({5, 5});
+  addBox({5, 6});
+  addBox({5, 7});
+
+  addBox({2, 8});
+  for (int i = 0; i <= max_indexes.first; i++) {
+    addBox({i, 0});
+    addBox({i, max_indexes.second});
+  }
+  for (int i = 1; i <= max_indexes.second - 1; i++) {
+    addBox({0, i});
+    addBox({max_indexes.first, i});
   }
 }
 
 void BoxMenager::initialize() {
-  inittializeBoxes(BoxData::DEFAULT_BOX_SPACES);
+  inittializeBoxes(15);
   createEdges();
 }
 
@@ -134,10 +140,4 @@ bool BoxMenager::isPositionFree(const tgui::Layout2d &layout,
     }
   }
   return true;
-
-  //   auto index = std::find_if(menager_vector.begin(), menager_vector.end(),
-  //                             [&layout](auto &menager_box) {
-  //                               return menager_box.canBeInSpace(layout);
-  //                             });
-  //   return !index->isWidgetInsideAnyBox(layout, size);
 }
