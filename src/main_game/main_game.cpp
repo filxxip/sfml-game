@@ -43,22 +43,34 @@ void MainGame::movePlayerIfValidNewPosition(Player::Movement movement) {
 
 void MainGame::movePlayer() {
   if (isRunning()) {
+    std::clock_t start = std::clock();
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-      // std::clock_t start = std::clock();
+      std::clock_t start = std::clock();
 
       movePlayerIfValidNewPosition(Player::Movement::LEFT);
-      // double duration = (std::clock() - start);
-      // std::cout << duration << std::endl;
+      double duration = (std::clock() - start);
+      std::cout << duration << "l" << std::endl;
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+      std::clock_t start = std::clock();
       movePlayerIfValidNewPosition(Player::Movement::RIGHT);
+      double duration = (std::clock() - start);
+      std::cout << duration << "r" << std::endl;
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
+      std::clock_t start = std::clock();
       movePlayerIfValidNewPosition(Player::Movement::DOWN);
+      double duration = (std::clock() - start);
+      std::cout << duration << "d" << std::endl;
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+      std::clock_t start = std::clock();
       movePlayerIfValidNewPosition(Player::Movement::UP);
+      double duration = (std::clock() - start);
+      std::cout << duration << "u" << std::endl;
     }
+    // double duration = (std::clock() - start);
+    // std::cout << duration << std::endl;
   }
 }
 

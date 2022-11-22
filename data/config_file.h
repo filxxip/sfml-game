@@ -83,7 +83,7 @@ constexpr int DELTA_PANEL_Y_POSITION = 70;
 
 namespace BoxData {
 constexpr int SIZE = 35;
-constexpr int DEFAULT_BOX_SPACES = 15;
+constexpr int DEFAULT_BOX_SPACES = 5;
 constexpr int DELTA_PANEL_Y_POSITION = PanelData::DELTA_PANEL_Y_POSITION + 20;
 } // namespace BoxData
 

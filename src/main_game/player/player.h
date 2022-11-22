@@ -34,7 +34,7 @@ public:
 private:
   bool isYValid(double new_y) const;
   bool isXValid(double new_x) const;
-  int speed_rate = 5;
+  int speed_rate = 15;
   Bomb::BombType bomb_selector = Bomb::BombType::TIME;
   std::vector<Bomb::BombType> bomb_options{
       Bomb::BombType::TIME, Bomb::BombType::CLICK, Bomb::BombType::HEART};
