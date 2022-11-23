@@ -12,18 +12,12 @@ BoxMenagerPart::BoxMenagerPart(Range &&x_range_, Range &&y_range_)
           {y_range.getMin() + (y_range.getMax() - y_range.getMin()) / 2,
            y_range.getMin() + (y_range.getMax() - y_range.getMin()) / 2}) {}
 
-// bool BoxMenagerPart::canBeInSpace(const CustomPicture::Ptr &picture) const {
-//   return canBeInSpace(picture->getPosition(), picture->getSize());
-// }
-
 bool BoxMenagerPart::canBeInSpace(const tgui::Layout2d &layout,
                                   const tgui::Layout2d &size) const {
   const auto x = layout.x.getValue();
   const auto y = layout.y.getValue();
   const auto x_max = layout.x.getValue() + size.x.getValue();
   const auto y_max = layout.y.getValue() + size.y.getValue();
-  // std::cout << "ilosc" << box_vector.size() << "----" << layout.toString()
-  //           << "----" << size.toString() << std::endl;
   if (x > x_range.getMax() || x_range.getMin() > x_max) {
     return false;
   }
@@ -77,6 +71,14 @@ bool BoxMenagerPart::isWidgetInsideAnyBox(const tgui::Layout2d &layout,
   return index != box_vector.end();
 }
 
+void BoxMenagerPart::destroy(MainGameComponents &components_) {
+
+  for (auto &box : box_vector) {
+    components_.gui.remove(box->getPicture());
+  }
+  box_vector.clear();
+}
+
 BoxMenager::BoxMenager(MainGameComponents &components_, const Player &player_)
     : components(components_), player(player_) {}
 
@@ -102,59 +104,38 @@ void BoxMenager::inittializeBoxes(int count) {
   }
 }
 
-// std::pair<int, int> BoxMenager::getMaxXIndexes() const {
-//   auto x_min = 1;
-//   auto x_max = max_indexes.first - 1;
-//   return std::pair<int, int>(x_min, x_max);
-// };
-
-// std::pair<int, int> BoxMenager::getMaxYIndexes() const {
-//   auto y_min = 1;
-//   auto y_max = max_indexes.second - 1;
-//   return std::pair<int, int>(y_min, y_max);
-// };
-
 void BoxMenager::createBoard() {
-  srand((unsigned)time(NULL));
-  for (int i = 0; i < 140; i++) {
-    while (true) {
-      auto max_x = BoxData::ELEMENTS_X - 1;
-      auto min_x = 1;
-      int randomx = rand() % (max_x - min_x + 1) + min_x;
-      auto max_y = BoxData::ELEMENTS_Y - 1;
-      auto min_y = 1;
-      int randomy = rand() % (max_y - min_y + 1) + min_y;
-      if (areIndexesFree({randomx, randomy})) {
-        addBox({randomx, randomy});
-        break;
+  std::vector<Index> possible_indexes;
+  possible_indexes.reserve(BoxData::MAX_X_INDEX * BoxData::MAX_Y_INDEX);
+
+  for (int i = BoxData::MIN_X_INDEX; i <= BoxData::MAX_X_INDEX; i++) {
+    for (int j = BoxData::MIN_Y_INDEX; j <= BoxData::MAX_Y_INDEX; j++) {
+      if (!(i == 1 && j == 1) && !(i == 2 && j == 1) && !(i == 1 && j == 2)) {
+        possible_indexes.emplace_back(i, j);
       }
     }
   }
+  srand((unsigned)time(NULL));
+  for (int i = 0; i < 170; i++) {
+    int randomx = rand() % possible_indexes.size();
+    auto itr = possible_indexes.begin() + randomx;
+    addBox(std::move(possible_indexes.at(randomx)));
+    possible_indexes.erase(itr);
+  }
+  for (int i = 0; i < 50; i++) {
+    int randomx = rand() % possible_indexes.size();
+    auto itr = possible_indexes.begin() + randomx;
+    addStone(std::move(possible_indexes.at(randomx)));
+    possible_indexes.erase(itr);
+  }
 }
 
-// void BoxMenager::createBoxesData() {
-//   double max_x = components.window.getSize().x;
-//   double max_y =
-//       components.window.getSize().y - BoxData::DELTA_PANEL_Y_POSITION;
-//   auto elements_number_x = static_cast<int>(max_x / BoxData::SIZE);
-//   auto elements_number_y = static_cast<int>(max_y / BoxData::SIZE);
-
-//   // max_indexes = {elements_number_x - 1, elements_number_y - 1};
-//   double break_space_x = elements_number_x > 1
-//                              ? (max_x - elements_number_x * BoxData::SIZE) /
-//                                    static_cast<double>(elements_number_x - 1)
-//                              : break_space_x = 0;
-//   double break_space_y = elements_number_y > 1
-//                              ? (max_y - elements_number_y * BoxData::SIZE) /
-//                                    static_cast<double>(elements_number_y - 1)
-//                              : break_space_y = 0;
-
-//   // box_element_size = {break_space_x + box_size,
-//   //                     break_space_y + box_size}; // gdzies to trzeba
-//   //                     przezucic
-//   // Index::initialize({break_space_x + box_size, break_space_y + box_size},
-//   //                   {elements_number_x - 1, elements_number_y - 1});
-// }
+void BoxMenager::remove() {
+  for (auto &box : menager_vector) {
+    box.destroy(components);
+  }
+  menager_vector.clear();
+}
 
 void BoxMenager::addBox(Index &&index, BoxFactory::Types type) {
   auto pos = index.convertToPosition();
@@ -167,8 +148,6 @@ void BoxMenager::addBox(Index &&index, BoxFactory::Types type) {
       }
     }
   }
-
-  // box->put(positions.x.getValue(), positions.y.getValue());
 }
 
 void BoxMenager::addStone(Index &&indexes) {
@@ -189,13 +168,6 @@ void BoxMenager::createEdges() {
     addStone({BoxData::ELEMENTS_X - 1, i});
   }
 }
-
-// bool BoxMenager::areIndexesValid(std::pair<int, int> indexes) const {
-//   return indexes.first >= getMaxXIndexes().first &&
-//          indexes.first <= getMaxXIndexes().second &&
-//          indexes.second >= getMaxYIndexes().first &&
-//          indexes.second <= getMaxYIndexes().second;
-// }
 
 void BoxMenager::initialize() {
   inittializeBoxes(15);
@@ -221,10 +193,3 @@ bool BoxMenager::isPositionFree(const tgui::Layout2d &layout) const {
 bool BoxMenager::areIndexesFree(Index &&indexes) const {
   return indexes.isValid() && isPositionFree(indexes.convertToPosition());
 }
-
-// bool BoxMenager::areIndexesFree(Index &&indexes,
-//                                 const tgui::Layout2d &size) const {
-//   return areIndexesValid(indexes) &&
-//          isPositionFree({indexes.first * box_element_size.first,
-//                          indexes.second * box_element_size.second});
-// }

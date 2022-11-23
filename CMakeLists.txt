@@ -34,6 +34,7 @@ add_executable(${PROJECT_NAME}
     src/main_game/down_panel/down_panel.cpp
     src/main_game/box/box.cpp
     src/main_game/box/box_menager.cpp
+    src/main_game/box/data_classes.cpp
     sfml.cpp
 )
 

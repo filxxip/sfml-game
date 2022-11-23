@@ -95,8 +95,10 @@ constexpr double BREAK_SPACE_Y =
     static_cast<double>(ELEMENTS_Y - 1);
 constexpr double INDEX_BOX_WIDTH = SIZE + BREAK_SPACE_X;
 constexpr double INDEX_BOX_HEIGHT = SIZE + BREAK_SPACE_Y;
-constexpr int MAX_X_INDEX = ELEMENTS_X - 1;
-constexpr int MAX_Y_INDEX = ELEMENTS_Y - 1;
+constexpr int MAX_X_INDEX = ELEMENTS_X - 2;
+constexpr int MAX_Y_INDEX = ELEMENTS_Y - 2;
+constexpr int MIN_X_INDEX = 1;
+constexpr int MIN_Y_INDEX = 1;
 
 } // namespace BoxData
 
@@ -111,7 +113,7 @@ constexpr int SIZE = BoxData::SIZE - 10;
 
 namespace PlayerData {
 constexpr int SIZE = BoxData::SIZE - 7;
-constexpr std::pair<int, int> START_INDEXES = {1, 1};
+// constexpr std::pair<int, int> START_INDEXES = {1, 1};
 // constexpr std::pair<int, int> FREE_START_INDEXES1 = {2, 1};
 // constexpr std::pair<int, int> FREE_START_INDEXES2 = {1, 2};
 } // namespace PlayerData

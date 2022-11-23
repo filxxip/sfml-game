@@ -1,4 +1,5 @@
 #pragma once
+#include "../main_game/box/data_classes.h"
 #include "picture.h"
 
 class GamePicture : public CustomPicture {
@@ -9,4 +10,6 @@ public:
 
   bool isWidgetInside(const tgui::Layout2d &position,
                       const tgui::Layout2d &size) const;
+
+  void setIndexPosition(Index &&index);
 };

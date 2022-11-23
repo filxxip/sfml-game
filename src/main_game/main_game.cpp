@@ -21,6 +21,7 @@ void MainGame::remove() {
   // active_messagebox.destroy();
   player.removeEachItem();
   panel.remove();
+  box_menager.remove();
   own_signal.emit(&customwidget);
 }
 
