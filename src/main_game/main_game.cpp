@@ -2,13 +2,16 @@
 #include <fstream>
 #include <nlohmann/json.hpp>
 
+#include "box/box.h"
+
 MainGame::MainGame(MainGameComponents &components_)
     : components(components_), player(components_), own_signal("ClosingWindow"),
-      panel(components) {}
+      panel(components), box_menager(components, player) {}
 
 void MainGame::initialize() {
   state = State::RUNNING;
   // components.gui.add(player.getImage());
+  box_menager.initialize();
   player.initialize();
   panel.initialize();
   components.background.setImage(Paths::GAME_BACKGROUND);
@@ -18,6 +21,7 @@ void MainGame::remove() {
   // active_messagebox.destroy();
   player.removeEachItem();
   panel.remove();
+  box_menager.remove();
   own_signal.emit(&customwidget);
 }
 
@@ -30,20 +34,44 @@ const bool MainGame::isInitialized() const {
 
 const Player &MainGame::getPlayer() const { return player; }
 
+void MainGame::movePlayerIfValidNewPosition(Player::Movement movement) {
+  auto potential_new_position = player.getPredictedNewPosition(movement);
+  if (box_menager.isPositionFree(potential_new_position,
+                                 player.getImage()->getSize())) {
+    player.move(movement);
+  }
+}
+
 void MainGame::movePlayer() {
   if (isRunning()) {
+    std::clock_t start = std::clock();
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-      player.move(Player::Movement::LEFT);
+      // std::clock_t start = std::clock();
+
+      movePlayerIfValidNewPosition(Player::Movement::LEFT);
+      // double duration = (std::clock() - start);
+      // std::cout << duration << "l" << std::endl;
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-      player.move(Player::Movement::RIGHT);
+      // std::clock_t start = std::clock();
+      movePlayerIfValidNewPosition(Player::Movement::RIGHT);
+      // double duration = (std::clock() - start);
+      // std::cout << duration << "r" << std::endl;
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
-      player.move(Player::Movement::DOWN);
+      // std::clock_t start = std::clock();
+      movePlayerIfValidNewPosition(Player::Movement::DOWN);
+      // double duration = (std::clock() - start);
+      // std::cout << duration << "d" << std::endl;
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
-      player.move(Player::Movement::UP);
+      // std::clock_t start = std::clock();
+      movePlayerIfValidNewPosition(Player::Movement::UP);
+      // double duration = (std::clock() - start);
+      // std::cout << duration << "u" << std::endl;
     }
+    // double duration = (std::clock() - start);
+    // std::cout << duration << std::endl;
   }
 }
 

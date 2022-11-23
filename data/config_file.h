@@ -22,6 +22,8 @@ constexpr char BOMBER_PLAYER[] = "../images/bomber_player.png";
 constexpr char GAME_BACKGROUND[] = "../images/game_background.jpg";
 constexpr char MENU_STYLE[] = "../themes/menu.style";
 constexpr char MESSAGE_BOX_STYLE[] = "../themes/messagebox.style";
+constexpr char BOX_PATH[] = "../images/box.png";
+constexpr char STONE[] = "../images/stone.png";
 } // namespace Paths
 
 namespace RendererNames {
@@ -68,15 +70,6 @@ constexpr char OPTIONS[] = "Options";
 } // namespace ButtonsText
 } // namespace MainMenuData
 
-namespace BombData {
-constexpr int STANDARD_LIVE_TIME = 3000;
-constexpr int MINIMUM_LIVE_TIME = 1000;
-constexpr int MAXIMUM_RANDOM_LIVE_TIME = 10000;
-constexpr int SNAPSHOTTING_START = 1000;
-constexpr int SNAPSHOTTING_PERIOD = 100;
-constexpr int SIZE = 30;
-} // namespace BombData
-
 namespace PanelData {
 constexpr int HEART_X_POSITION = 100;
 constexpr int BOMB_SUP_POS = 150;
@@ -87,3 +80,40 @@ constexpr int BOMB_SIZE = 50;
 constexpr int DEFAULT_HEART_NUMBER = 3;
 constexpr int DELTA_PANEL_Y_POSITION = 70;
 } // namespace PanelData
+
+namespace BoxData {
+constexpr int SIZE = 35;
+constexpr int DEFAULT_BOX_SPACES = 5;
+constexpr int DELTA_PANEL_Y_POSITION = PanelData::DELTA_PANEL_Y_POSITION + 20;
+constexpr int ELEMENTS_X = static_cast<int>((WindowData::WIDTH) / SIZE);
+constexpr int ELEMENTS_Y =
+    static_cast<int>((WindowData::HEIGHT - DELTA_PANEL_Y_POSITION) / SIZE);
+constexpr double BREAK_SPACE_X = (WindowData::WIDTH - ELEMENTS_X * SIZE) /
+                                 static_cast<double>(ELEMENTS_X - 1);
+constexpr double BREAK_SPACE_Y =
+    ((WindowData::HEIGHT - DELTA_PANEL_Y_POSITION) - ELEMENTS_Y * SIZE) /
+    static_cast<double>(ELEMENTS_Y - 1);
+constexpr double INDEX_BOX_WIDTH = SIZE + BREAK_SPACE_X;
+constexpr double INDEX_BOX_HEIGHT = SIZE + BREAK_SPACE_Y;
+constexpr int MAX_X_INDEX = ELEMENTS_X - 2;
+constexpr int MAX_Y_INDEX = ELEMENTS_Y - 2;
+constexpr int MIN_X_INDEX = 1;
+constexpr int MIN_Y_INDEX = 1;
+
+} // namespace BoxData
+
+namespace BombData {
+constexpr int STANDARD_LIVE_TIME = 3000;
+constexpr int MINIMUM_LIVE_TIME = 1000;
+constexpr int MAXIMUM_RANDOM_LIVE_TIME = 10000;
+constexpr int SNAPSHOTTING_START = 1000;
+constexpr int SNAPSHOTTING_PERIOD = 100;
+constexpr int SIZE = BoxData::SIZE - 10;
+} // namespace BombData
+
+namespace PlayerData {
+constexpr int SIZE = BoxData::SIZE - 7;
+// constexpr std::pair<int, int> START_INDEXES = {1, 1};
+// constexpr std::pair<int, int> FREE_START_INDEXES1 = {2, 1};
+// constexpr std::pair<int, int> FREE_START_INDEXES2 = {1, 2};
+} // namespace PlayerData
