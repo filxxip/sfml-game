@@ -12,9 +12,9 @@ BoxMenagerPart::BoxMenagerPart(Range &&x_range_, Range &&y_range_)
           {y_range.getMin() + (y_range.getMax() - y_range.getMin()) / 2,
            y_range.getMin() + (y_range.getMax() - y_range.getMin()) / 2}) {}
 
-bool BoxMenagerPart::canBeInSpace(const CustomPicture::Ptr &picture) const {
-  return canBeInSpace(picture->getPosition(), picture->getSize());
-}
+// bool BoxMenagerPart::canBeInSpace(const CustomPicture::Ptr &picture) const {
+//   return canBeInSpace(picture->getPosition(), picture->getSize());
+// }
 
 bool BoxMenagerPart::canBeInSpace(const tgui::Layout2d &layout,
                                   const tgui::Layout2d &size) const {
@@ -53,8 +53,6 @@ void BoxMenagerPart::addBox(Box::Ptr box) {
   auto size = box->getPicture()->getSize();
   auto maximum_x = position.x + size.x;
   auto maximum_y = position.y + size.y;
-  std::cout << maximum_elements_x.toString() << "xxxx    "
-            << maximum_elements_y.toString() << std::endl;
   if (maximum_elements_x.getMin() > position.x) {
     maximum_elements_x.setMin(position.x);
   }
@@ -79,10 +77,8 @@ bool BoxMenagerPart::isWidgetInsideAnyBox(const tgui::Layout2d &layout,
   return index != box_vector.end();
 }
 
-BoxMenager::BoxMenager(MainGameComponents &components_)
-    : box_size(BoxData::SIZE), components(components_) {
-  createBoxesData();
-}
+BoxMenager::BoxMenager(MainGameComponents &components_, const Player &player_)
+    : components(components_), player(player_) {}
 
 void BoxMenager::inittializeBoxes(int count) {
   double width = components.window.getSize().x;
@@ -98,85 +94,112 @@ void BoxMenager::inittializeBoxes(int count) {
     for (int j = 0; j < count; j++) {
       menager_vector.push_back(
           BoxMenagerPart({init_width, end_width}, {init_height, end_height}));
-      // std::cout << init_width << " " << init_height << " " << end_width << "
-      // "
-      //           << end_height << "tututu" << std::endl;
       init_width += width;
       end_width += width;
     }
-    std::cout << std::endl;
     init_height += height;
     end_height += height;
   }
 }
 
-void BoxMenager::createBoxesData() {
-  double max_x = components.window.getSize().x;
-  double max_y =
-      components.window.getSize().y - BoxData::DELTA_PANEL_Y_POSITION;
-  auto elements_number_x = static_cast<int>(max_x / BoxData::SIZE);
-  auto elements_number_y = static_cast<int>(max_y / BoxData::SIZE);
-  max_indexes = {elements_number_x - 1, elements_number_y - 1};
-  double break_space_x = elements_number_x > 1
-                             ? (max_x - elements_number_x * BoxData::SIZE) /
-                                   static_cast<double>(elements_number_x - 1)
-                             : break_space_x = 0;
-  double break_space_y = elements_number_y > 1
-                             ? (max_y - elements_number_y * BoxData::SIZE) /
-                                   static_cast<double>(elements_number_y - 1)
-                             : break_space_y = 0;
+// std::pair<int, int> BoxMenager::getMaxXIndexes() const {
+//   auto x_min = 1;
+//   auto x_max = max_indexes.first - 1;
+//   return std::pair<int, int>(x_min, x_max);
+// };
 
-  box_element_size = {break_space_x + box_size,
-                      break_space_y + box_size}; // gdzies to trzeba przezucic
+// std::pair<int, int> BoxMenager::getMaxYIndexes() const {
+//   auto y_min = 1;
+//   auto y_max = max_indexes.second - 1;
+//   return std::pair<int, int>(y_min, y_max);
+// };
+
+void BoxMenager::createBoard() {
+  srand((unsigned)time(NULL));
+  for (int i = 0; i < 140; i++) {
+    while (true) {
+      auto max_x = BoxData::ELEMENTS_X - 1;
+      auto min_x = 1;
+      int randomx = rand() % (max_x - min_x + 1) + min_x;
+      auto max_y = BoxData::ELEMENTS_Y - 1;
+      auto min_y = 1;
+      int randomy = rand() % (max_y - min_y + 1) + min_y;
+      if (areIndexesFree({randomx, randomy})) {
+        addBox({randomx, randomy});
+        break;
+      }
+    }
+  }
 }
 
-void BoxMenager::addBox(tgui::Layout2d &&positions, BoxFactory::Types type) {
-  auto box = BoxFactory::create(components, type);
-  box->put(positions.x.getValue(), positions.y.getValue());
-  for (auto &menager_box : menager_vector) {
-    if (menager_box.canBeInSpace(positions, box->getPicture()->getSize())) {
-      menager_box.addBox(box);
+// void BoxMenager::createBoxesData() {
+//   double max_x = components.window.getSize().x;
+//   double max_y =
+//       components.window.getSize().y - BoxData::DELTA_PANEL_Y_POSITION;
+//   auto elements_number_x = static_cast<int>(max_x / BoxData::SIZE);
+//   auto elements_number_y = static_cast<int>(max_y / BoxData::SIZE);
+
+//   // max_indexes = {elements_number_x - 1, elements_number_y - 1};
+//   double break_space_x = elements_number_x > 1
+//                              ? (max_x - elements_number_x * BoxData::SIZE) /
+//                                    static_cast<double>(elements_number_x - 1)
+//                              : break_space_x = 0;
+//   double break_space_y = elements_number_y > 1
+//                              ? (max_y - elements_number_y * BoxData::SIZE) /
+//                                    static_cast<double>(elements_number_y - 1)
+//                              : break_space_y = 0;
+
+//   // box_element_size = {break_space_x + box_size,
+//   //                     break_space_y + box_size}; // gdzies to trzeba
+//   //                     przezucic
+//   // Index::initialize({break_space_x + box_size, break_space_y + box_size},
+//   //                   {elements_number_x - 1, elements_number_y - 1});
+// }
+
+void BoxMenager::addBox(Index &&index, BoxFactory::Types type) {
+  auto pos = index.convertToPosition();
+  if (isPositionFree(pos)) {
+    auto box = BoxFactory::create(components, type);
+    box->put(pos.x.getValue(), pos.y.getValue());
+    for (auto &menager_box : menager_vector) {
+      if (menager_box.canBeInSpace(pos, box->getPicture()->getSize())) {
+        menager_box.addBox(box);
+      }
     }
   }
 
   // box->put(positions.x.getValue(), positions.y.getValue());
 }
 
-void BoxMenager::addStone(tgui::Layout2d &&indexes) {
-  addBox({indexes.x.getValue() * box_element_size.first,
-          indexes.y.getValue() * box_element_size.second},
-         BoxFactory::Types::STONE);
+void BoxMenager::addStone(Index &&indexes) {
+  addBox(std::move(indexes), BoxFactory::Types::STONE);
 }
 
-void BoxMenager::addBox(tgui::Layout2d &&indexes) {
-  addBox({indexes.x.getValue() * box_element_size.first,
-          indexes.y.getValue() * box_element_size.second},
-         BoxFactory::Types::BOX);
+void BoxMenager::addBox(Index &&indexes) {
+  addBox(std::move(indexes), BoxFactory::Types::BOX);
 }
 
 void BoxMenager::createEdges() {
-
-  addBox({5, 2});
-  addBox({5, 1});
-  addBox({5, 3});
-  addBox({5, 4});
-  addBox({5, 5});
-  addBox({5, 6});
-  addBox({5, 7});
-
-  addBox({2, 8});
-  for (int i = 0; i <= max_indexes.first; i++) {
+  for (int i = 0; i <= BoxData::ELEMENTS_X - 1; i++) {
     addStone({i, 0});
-    addStone({i, max_indexes.second});
+    addStone({i, BoxData::ELEMENTS_Y - 1});
   }
-  for (int i = 1; i <= max_indexes.second - 1; i++) {
+  for (int i = 1; i <= BoxData::ELEMENTS_Y - 1 - 1; i++) {
     addStone({0, i});
-    addStone({max_indexes.first, i});
+    addStone({BoxData::ELEMENTS_X - 1, i});
   }
 }
 
+// bool BoxMenager::areIndexesValid(std::pair<int, int> indexes) const {
+//   return indexes.first >= getMaxXIndexes().first &&
+//          indexes.first <= getMaxXIndexes().second &&
+//          indexes.second >= getMaxYIndexes().first &&
+//          indexes.second <= getMaxYIndexes().second;
+// }
+
 void BoxMenager::initialize() {
   inittializeBoxes(15);
+  createBoard();
   createEdges();
 }
 
@@ -191,3 +214,17 @@ bool BoxMenager::isPositionFree(const tgui::Layout2d &layout,
   }
   return true;
 }
+bool BoxMenager::isPositionFree(const tgui::Layout2d &layout) const {
+  return isPositionFree(layout, {BoxData::SIZE, BoxData::SIZE});
+}
+
+bool BoxMenager::areIndexesFree(Index &&indexes) const {
+  return indexes.isValid() && isPositionFree(indexes.convertToPosition());
+}
+
+// bool BoxMenager::areIndexesFree(Index &&indexes,
+//                                 const tgui::Layout2d &size) const {
+//   return areIndexesValid(indexes) &&
+//          isPositionFree({indexes.first * box_element_size.first,
+//                          indexes.second * box_element_size.second});
+// }

@@ -6,7 +6,7 @@
 
 MainGame::MainGame(MainGameComponents &components_)
     : components(components_), player(components_), own_signal("ClosingWindow"),
-      panel(components), box_menager(components) {}
+      panel(components), box_menager(components, player) {}
 
 void MainGame::initialize() {
   state = State::RUNNING;
@@ -45,29 +45,29 @@ void MainGame::movePlayer() {
   if (isRunning()) {
     std::clock_t start = std::clock();
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-      std::clock_t start = std::clock();
+      // std::clock_t start = std::clock();
 
       movePlayerIfValidNewPosition(Player::Movement::LEFT);
-      double duration = (std::clock() - start);
-      std::cout << duration << "l" << std::endl;
+      // double duration = (std::clock() - start);
+      // std::cout << duration << "l" << std::endl;
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-      std::clock_t start = std::clock();
+      // std::clock_t start = std::clock();
       movePlayerIfValidNewPosition(Player::Movement::RIGHT);
-      double duration = (std::clock() - start);
-      std::cout << duration << "r" << std::endl;
+      // double duration = (std::clock() - start);
+      // std::cout << duration << "r" << std::endl;
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
-      std::clock_t start = std::clock();
+      // std::clock_t start = std::clock();
       movePlayerIfValidNewPosition(Player::Movement::DOWN);
-      double duration = (std::clock() - start);
-      std::cout << duration << "d" << std::endl;
+      // double duration = (std::clock() - start);
+      // std::cout << duration << "d" << std::endl;
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
-      std::clock_t start = std::clock();
+      // std::clock_t start = std::clock();
       movePlayerIfValidNewPosition(Player::Movement::UP);
-      double duration = (std::clock() - start);
-      std::cout << duration << "u" << std::endl;
+      // double duration = (std::clock() - start);
+      // std::cout << duration << "u" << std::endl;
     }
     // double duration = (std::clock() - start);
     // std::cout << duration << std::endl;

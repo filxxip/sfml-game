@@ -85,6 +85,19 @@ namespace BoxData {
 constexpr int SIZE = 35;
 constexpr int DEFAULT_BOX_SPACES = 5;
 constexpr int DELTA_PANEL_Y_POSITION = PanelData::DELTA_PANEL_Y_POSITION + 20;
+constexpr int ELEMENTS_X = static_cast<int>((WindowData::WIDTH) / SIZE);
+constexpr int ELEMENTS_Y =
+    static_cast<int>((WindowData::HEIGHT - DELTA_PANEL_Y_POSITION) / SIZE);
+constexpr double BREAK_SPACE_X = (WindowData::WIDTH - ELEMENTS_X * SIZE) /
+                                 static_cast<double>(ELEMENTS_X - 1);
+constexpr double BREAK_SPACE_Y =
+    ((WindowData::HEIGHT - DELTA_PANEL_Y_POSITION) - ELEMENTS_Y * SIZE) /
+    static_cast<double>(ELEMENTS_Y - 1);
+constexpr double INDEX_BOX_WIDTH = SIZE + BREAK_SPACE_X;
+constexpr double INDEX_BOX_HEIGHT = SIZE + BREAK_SPACE_Y;
+constexpr int MAX_X_INDEX = ELEMENTS_X - 1;
+constexpr int MAX_Y_INDEX = ELEMENTS_Y - 1;
+
 } // namespace BoxData
 
 namespace BombData {
@@ -98,4 +111,7 @@ constexpr int SIZE = BoxData::SIZE - 10;
 
 namespace PlayerData {
 constexpr int SIZE = BoxData::SIZE - 7;
-}
+constexpr std::pair<int, int> START_INDEXES = {1, 1};
+// constexpr std::pair<int, int> FREE_START_INDEXES1 = {2, 1};
+// constexpr std::pair<int, int> FREE_START_INDEXES2 = {1, 2};
+} // namespace PlayerData
