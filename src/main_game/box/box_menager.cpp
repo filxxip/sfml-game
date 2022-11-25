@@ -10,7 +10,15 @@ BoxMenagerPart::BoxMenagerPart(Range &&x_range_, Range &&y_range_)
            x_range.getMin() + (x_range.getMax() - x_range.getMin()) / 2}),
       maximum_elements_y(
           {y_range.getMin() + (y_range.getMax() - y_range.getMin()) / 2,
-           y_range.getMin() + (y_range.getMax() - y_range.getMin()) / 2}) {}
+           y_range.getMin() + (y_range.getMax() - y_range.getMin()) / 2}) {
+  // std::cout
+  //     <<
+  //     BoxData::ScaleMenager<BoxData::SizeOptions::AVERAGE>::getBreakSpaceX()
+  //     << "  " << BoxData::INDEX_BOX_WIDTH << " " << BoxData::ELEMENTS_X << "
+  //     "
+  //     << BoxData::BREAK_SPACE_Y << "  " << BoxData::INDEX_BOX_HEIGHT << " "
+  //     << BoxData::ELEMENTS_Y << "   " << std::endl;
+}
 
 bool BoxMenagerPart::canBeInSpace(const tgui::Layout2d &layout,
                                   const tgui::Layout2d &size) const {
@@ -84,8 +92,10 @@ BoxMenager::BoxMenager(MainGameComponents &components_, const Player &player_)
 
 void BoxMenager::inittializeBoxes(int count) {
   double width = components.window.getSize().x;
-  double height =
-      components.window.getSize().y - PanelData::DELTA_PANEL_Y_POSITION;
+  double height = components.window.getSize().y -
+                  BoxData::ScaleMenager::getPanelElementSize(
+                      BoxData::ScaleMenager::PanelElement::
+                          DEFAULT_DELTA_PANEL_Y_POSITION_HEIGHT);
   width = width / count;
   height = height / count;
   double init_height = 0;
@@ -106,23 +116,27 @@ void BoxMenager::inittializeBoxes(int count) {
 
 void BoxMenager::createBoard() {
   std::vector<Index> possible_indexes;
-  possible_indexes.reserve(BoxData::MAX_X_INDEX * BoxData::MAX_Y_INDEX);
 
-  for (int i = BoxData::MIN_X_INDEX; i <= BoxData::MAX_X_INDEX; i++) {
-    for (int j = BoxData::MIN_Y_INDEX; j <= BoxData::MAX_Y_INDEX; j++) {
+  possible_indexes.reserve(BoxData::ScaleMenager::getMaxXIndex() *
+                           BoxData::ScaleMenager::getMaxYIndex());
+
+  for (int i = BoxData::ScaleMenager::getMinXIndex();
+       i <= BoxData::ScaleMenager::getMaxXIndex(); i++) {
+    for (int j = BoxData::ScaleMenager::getMinYIndex();
+         j <= BoxData::ScaleMenager::getMaxYIndex(); j++) {
       if (!(i == 1 && j == 1) && !(i == 2 && j == 1) && !(i == 1 && j == 2)) {
         possible_indexes.emplace_back(i, j);
       }
     }
   }
   srand((unsigned)time(NULL));
-  for (int i = 0; i < 170; i++) {
+  for (int i = 0; i < BoxData::ScaleMenager::getBoxesElementsNumber(); i++) {
     int randomx = rand() % possible_indexes.size();
     auto itr = possible_indexes.begin() + randomx;
     addBox(std::move(possible_indexes.at(randomx)));
     possible_indexes.erase(itr);
   }
-  for (int i = 0; i < 50; i++) {
+  for (int i = 0; i < BoxData::ScaleMenager::getStonesElementsNumber(); i++) {
     int randomx = rand() % possible_indexes.size();
     auto itr = possible_indexes.begin() + randomx;
     addStone(std::move(possible_indexes.at(randomx)));
@@ -136,7 +150,6 @@ void BoxMenager::remove() {
   }
   menager_vector.clear();
 }
-
 void BoxMenager::addBox(Index &&index, BoxFactory::Types type) {
   auto pos = index.convertToPosition();
   if (isPositionFree(pos)) {
@@ -149,26 +162,22 @@ void BoxMenager::addBox(Index &&index, BoxFactory::Types type) {
     }
   }
 }
-
 void BoxMenager::addStone(Index &&indexes) {
   addBox(std::move(indexes), BoxFactory::Types::STONE);
 }
-
 void BoxMenager::addBox(Index &&indexes) {
   addBox(std::move(indexes), BoxFactory::Types::BOX);
 }
-
 void BoxMenager::createEdges() {
-  for (int i = 0; i <= BoxData::ELEMENTS_X - 1; i++) {
+  for (int i = 0; i <= BoxData::ScaleMenager::getMaxXIndex() + 1; i++) {
     addStone({i, 0});
-    addStone({i, BoxData::ELEMENTS_Y - 1});
+    addStone({i, BoxData::ScaleMenager::getElementsYNumber() - 1});
   }
-  for (int i = 1; i <= BoxData::ELEMENTS_Y - 1 - 1; i++) {
+  for (int i = 1; i <= BoxData::ScaleMenager::getMaxYIndex() + 1; i++) {
     addStone({0, i});
-    addStone({BoxData::ELEMENTS_X - 1, i});
+    addStone({BoxData::ScaleMenager::getElementsXNumber() - 1, i});
   }
 }
-
 void BoxMenager::initialize() {
   inittializeBoxes(15);
   createBoard();
@@ -187,7 +196,8 @@ bool BoxMenager::isPositionFree(const tgui::Layout2d &layout,
   return true;
 }
 bool BoxMenager::isPositionFree(const tgui::Layout2d &layout) const {
-  return isPositionFree(layout, {BoxData::SIZE, BoxData::SIZE});
+  return isPositionFree(layout, {BoxData::ScaleMenager::getBoxSize(),
+                                 BoxData::ScaleMenager::getBoxSize()});
 }
 
 bool BoxMenager::areIndexesFree(Index &&indexes) const {

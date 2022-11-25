@@ -4,7 +4,8 @@
 Box::Box(MainGameComponents &components_, const std::string &path)
     : components(components_),
       picture(GamePicture::create(components.window, path)) {
-  picture->setSize({BoxData::SIZE, BoxData::SIZE});
+  picture->setSize({BoxData::ScaleMenager::getBoxSize(),
+                    BoxData::ScaleMenager::getBoxSize()});
 }
 
 void Box::put(double position_x, double position_y) {

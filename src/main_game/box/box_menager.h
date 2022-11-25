@@ -51,6 +51,7 @@ public:
   bool isPositionFree(const tgui::Layout2d &layout,
                       const tgui::Layout2d &size) const;
   bool isPositionFree(const tgui::Layout2d &layout) const;
+
   bool areIndexesFree(Index &&indexes) const;
   void remove();
 

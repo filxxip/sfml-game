@@ -22,7 +22,8 @@ void DownPanel::addHeart() {
       components.gui.add(heart);
       setSize();
       setPosition(components.window.getSize().y -
-                  PanelData::DELTA_PANEL_Y_POSITION);
+                  Scaler::getPanelElementSize(
+                      Scaler::PanelElement::DELTA_PANEL_Y_POSITION_HEIGHT));
       active_hearts++;
     }
   } else {
@@ -34,30 +35,45 @@ void DownPanel::addHeart() {
 void DownPanel::changeHeartStatus(int index) { hearts.at(index)->changeType(); }
 
 void DownPanel::setPosition(int y) {
-  setHeartsPosition(PanelData::HEART_X_POSITION, y);
+  setHeartsPosition(
+      Scaler::getPanelElementSize(Scaler::PanelElement::HEART_X_POSITION), y);
   current_bomb->setPosition(
-      components.window.getSize().x - PanelData::BOMB_SUP_POS, y);
+      components.window.getSize().x -
+          Scaler::getPanelElementSize(Scaler::PanelElement::BOMB_SUP_POS),
+      y);
 }
 
 void DownPanel::setSize() {
-  hearts_panel->setSize(hearts.size() * PanelData::HEARTS_SIZE +
-                            2 * PanelData::HEARTS_MARGIN +
-                            (hearts.size() - 1) * PanelData::HEARTS_SPACING,
-                        PanelData::HEARTS_SIZE + 2 * PanelData::HEARTS_MARGIN);
-  current_bomb->setSize(PanelData::BOMB_SIZE, PanelData::BOMB_SIZE);
+  hearts_panel->setSize(
+      hearts.size() *
+              Scaler::getPanelElementSize(Scaler::PanelElement::HEARTS_SIZE) +
+          2 * Scaler::getPanelElementSize(Scaler::PanelElement::HEARTS_MARGIN) +
+          (hearts.size() - 1) *
+              Scaler::getPanelElementSize(Scaler::PanelElement::HEARTS_SPACING),
+      Scaler::getPanelElementSize(Scaler::PanelElement::HEARTS_SIZE) +
+          2 * Scaler::getPanelElementSize(Scaler::PanelElement::HEARTS_MARGIN));
+  current_bomb->setSize(
+      Scaler::getPanelElementSize(Scaler::PanelElement::BOMB_SIZE),
+      Scaler::getPanelElementSize(Scaler::PanelElement::BOMB_SIZE));
 }
 
 void DownPanel::setHeartsPosition(int x, int y) {
   hearts_panel->setPosition(x, y);
-  int first_pos = x + PanelData::HEARTS_MARGIN;
+  int first_pos =
+      x + Scaler::getPanelElementSize(Scaler::PanelElement::HEARTS_MARGIN);
   for (auto &heart : hearts) {
-    heart->setPosition(first_pos, y + PanelData::HEARTS_MARGIN);
-    first_pos += PanelData::HEARTS_SPACING + PanelData::HEARTS_SIZE;
+    heart->setPosition(first_pos, y + Scaler::getPanelElementSize(
+                                          Scaler::PanelElement::HEARTS_MARGIN));
+    first_pos +=
+        Scaler::getPanelElementSize(Scaler::PanelElement::HEARTS_SPACING) +
+        Scaler::getPanelElementSize(Scaler::PanelElement::HEARTS_SIZE);
   }
 }
 Heart::Ptr DownPanel::createHeart() {
   auto heart = Heart::create(components.window, Paths::RED_HEART_PATH);
-  heart->setSize(PanelData::HEARTS_SIZE, PanelData::HEARTS_SIZE);
+  heart->setSize(
+      Scaler::getPanelElementSize(Scaler::PanelElement::HEARTS_SIZE),
+      Scaler::getPanelElementSize(Scaler::PanelElement::HEARTS_SIZE));
   hearts.push_back(heart);
   return heart;
 }
@@ -76,12 +92,18 @@ void DownPanel::createHearts(int hearts_number) {
 }
 
 void DownPanel::initialize() {
-  components.gui.add(current_bomb);
+  components.gui.add(
+      current_bomb); // chyba lepiej bez constexpr ogarne funckje z template i
+                     // potem using i po prostu wywolywac dana funckje i tyle,
+                     // tworzenie tyych wszystich templatowanych funckji pewnie
+                     // i tak wiecej czasu zajmie niz szybkie w miare obliczenie
+                     // rozmiaru
   components.gui.add(hearts_panel);
   active_hearts = PanelData::DEFAULT_HEART_NUMBER;
   createHearts(active_hearts);
   setPosition(components.window.getSize().y -
-              PanelData::DELTA_PANEL_Y_POSITION);
+              Scaler::getPanelElementSize(
+                  Scaler::PanelElement::DELTA_PANEL_Y_POSITION_HEIGHT));
   setSize();
   for (auto &heart : hearts) {
     components.gui.add(heart);

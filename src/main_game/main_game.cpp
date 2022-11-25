@@ -11,6 +11,7 @@ MainGame::MainGame(MainGameComponents &components_)
 void MainGame::initialize() {
   state = State::RUNNING;
   // components.gui.add(player.getImage());
+  BoxData::ScaleMenager::changeOption(BoxData::SizeOptions::NORMAL);
   box_menager.initialize();
   player.initialize();
   panel.initialize();

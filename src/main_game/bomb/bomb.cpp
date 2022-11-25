@@ -11,16 +11,13 @@ const std::unordered_map<Bomb::BombType, std::string> Bomb::bomb_names{
 Bomb::Bomb(MainGameComponents &components_)
     : components(components_),
       picture(CustomPicture::create(components.window, Paths::BOMB_PATH)) {
-  picture->setSize({BombData::SIZE, BombData::SIZE});
+  std::cout << BoxData::ScaleMenager::getBombSize() << std::endl;
+  picture->setSize({BoxData::ScaleMenager::getBombSize(),
+                    BoxData::ScaleMenager::getBombSize()});
 }
 
-void Bomb::putUnder(tgui::Widget::Ptr widget) {
-  auto [width, height] = widget->getSize();
-  auto [x, y] = widget->getPosition();
-  auto [pct_width, pct_height] = picture->getSize();
-  auto new_x = x + 0.5 * width - 0.5 * pct_width;
-  auto new_y = y + 0.5 * height - 0.5 * pct_height;
-  picture->setPosition(new_x, new_y);
+void Bomb::putUnder(CustomPicture::Ptr widget) {
+  picture->setMiddlePosition(widget);
   components.addOver(picture, std::move(widget));
 }
 

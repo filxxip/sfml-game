@@ -33,18 +33,21 @@ const tgui::Layout2d Player::getPredictedNewPosition(Movement direction) {
 }
 void Player::initialize() {
   components.gui.add(picture);
-  picture->setSize(PlayerData::SIZE, PlayerData::SIZE);
+  picture->setSize(BoxData::ScaleMenager::getPlayerSize(),
+                   BoxData::ScaleMenager::getPlayerSize());
   picture->setIndexPosition(Index(1, 1));
 }
 
 void Player::remove() { components.gui.remove(picture); }
 
 bool Player::isYValid(double new_y) const {
-  return new_y > 0 && new_y < components.window.getSize().y - PlayerData::SIZE;
+  return new_y > 0 && new_y < components.window.getSize().y -
+                                  BoxData::ScaleMenager::getPlayerSize();
 }
 
 bool Player::isXValid(double new_x) const {
-  return new_x > 0 && new_x < components.window.getSize().x - PlayerData::SIZE;
+  return new_x > 0 && new_x < components.window.getSize().x -
+                                  BoxData::ScaleMenager::getPlayerSize();
 }
 
 void Player::putBomb() {

@@ -33,6 +33,7 @@ private:
 
 class DownPanel {
 private:
+  using Scaler = BoxData::ScaleMenager;
   MainGameComponents &components;
   CustomPicture::Ptr hearts_panel;
   std::vector<Heart::Ptr> hearts;

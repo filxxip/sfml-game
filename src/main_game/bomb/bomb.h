@@ -29,7 +29,7 @@ public:
   Bomb(MainGameComponents &components_);
   void execute();
   virtual bool isExpired(bool game_is_running) = 0;
-  void putUnder(tgui::Widget::Ptr widget);
+  void putUnder(CustomPicture::Ptr widget);
   bool isExecuted() const { return executed; }
 
   void destroyFromGUI();

@@ -17,7 +17,8 @@ std::string Range::toString() {
 Index::Index(int x_, int y_) : x(x_), y(y_) {}
 
 tgui::Layout2d Index::convertToPosition() const {
-  return convertToPosition(BoxData::SIZE, BoxData::SIZE);
+  return convertToPosition(BoxData::ScaleMenager::getBoxSize(),
+                           BoxData::ScaleMenager::getBoxSize());
 }
 
 tgui::Layout2d Index::convertToPosition(double element_size) const {
@@ -26,15 +27,16 @@ tgui::Layout2d Index::convertToPosition(double element_size) const {
 
 tgui::Layout2d Index::convertToPosition(double element_size_x,
                                         double element_size_y) const {
-  return tgui::Layout2d(x * BoxData::INDEX_BOX_WIDTH +
-                            0.5 * (BoxData::INDEX_BOX_WIDTH - element_size_x),
-                        y * BoxData::INDEX_BOX_HEIGHT +
-                            0.5 * (BoxData::INDEX_BOX_HEIGHT - element_size_y));
-}
 
+  return tgui::Layout2d(
+      x * BoxData::ScaleMenager::getIndexBoxWidth() +
+          0.5 * (BoxData::ScaleMenager::getIndexBoxWidth() - element_size_x),
+      y * BoxData::ScaleMenager::getIndexBoxHeight() +
+          0.5 * (BoxData::ScaleMenager::getIndexBoxHeight() - element_size_y));
+}
 bool Index::isValid() const {
-  if (x > 0 && x < BoxData::MAX_X_INDEX) {
-    if (y > 0 && y < BoxData::MAX_Y_INDEX) {
+  if (x > 0 && x < BoxData::ScaleMenager::getMaxXIndex()) {
+    if (y > 0 && y < BoxData::ScaleMenager::getMaxYIndex()) {
       return true;
     }
   }
