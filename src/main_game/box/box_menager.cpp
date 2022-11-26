@@ -10,15 +10,7 @@ BoxMenagerPart::BoxMenagerPart(Range &&x_range_, Range &&y_range_)
            x_range.getMin() + (x_range.getMax() - x_range.getMin()) / 2}),
       maximum_elements_y(
           {y_range.getMin() + (y_range.getMax() - y_range.getMin()) / 2,
-           y_range.getMin() + (y_range.getMax() - y_range.getMin()) / 2}) {
-  // std::cout
-  //     <<
-  //     BoxData::ScaleMenager<BoxData::SizeOptions::AVERAGE>::getBreakSpaceX()
-  //     << "  " << BoxData::INDEX_BOX_WIDTH << " " << BoxData::ELEMENTS_X << "
-  //     "
-  //     << BoxData::BREAK_SPACE_Y << "  " << BoxData::INDEX_BOX_HEIGHT << " "
-  //     << BoxData::ELEMENTS_Y << "   " << std::endl;
-}
+           y_range.getMin() + (y_range.getMax() - y_range.getMin()) / 2}) {}
 
 bool BoxMenagerPart::canBeInSpace(const tgui::Layout2d &layout,
                                   const tgui::Layout2d &size) const {
@@ -200,6 +192,57 @@ bool BoxMenager::isPositionFree(const tgui::Layout2d &layout) const {
                                  BoxData::ScaleMenager::getBoxSize()});
 }
 
-bool BoxMenager::areIndexesFree(Index &&indexes) const {
+bool BoxMenager::areIndexesFree(const Index &indexes) const {
   return indexes.isValid() && isPositionFree(indexes.convertToPosition());
+}
+
+void BoxMenager::backendFireCreator(Index &&init_index, bool &condition) {
+  if (condition) {
+    if (areIndexesFree(init_index)) {
+      createFire(std::move(init_index));
+    } else {
+      condition = false;
+    }
+  }
+}
+
+void BoxMenager::createWholeFire(Index &&init_index, int bomb_power) {
+  bool is_right_path_free = true;
+  bool is_left_path_free = true;
+  bool is_up_path_free = true;
+  bool is_down_path_free = true;
+
+  for (int i = 0; i < bomb_power; i++) {
+    backendFireCreator(init_index + Index(0, i), is_down_path_free);
+    backendFireCreator(init_index + Index(i, 0), is_right_path_free);
+    backendFireCreator(init_index + Index(-i, 0), is_left_path_free);
+    backendFireCreator(init_index + Index(0, -i), is_up_path_free);
+  }
+}
+
+void BoxMenager::createFire(Index &&index) {
+  auto fire = Fire::create(components);
+  fire->setIndexPosition(std::move(index));
+  components.gui.add(fire);
+  fire_vector.push_back(std::move(fire));
+}
+
+void BoxMenager::removeEveryExpiredFire() {
+  auto index = std::remove_if(fire_vector.begin(), fire_vector.end(),
+                              [](auto &fire) { return fire->isExpired(); });
+  fire_vector.erase(index, fire_vector.end());
+}
+
+void BoxMenager::checkFiresExpired(bool game_is_running) {
+  for (auto &fire : fire_vector) {
+    fire->measure(game_is_running);
+    if (fire->isExpired()) {
+      components.gui.remove(fire); // to remoeve
+      fire->removeFromGui();       // to do
+    }
+  }
+  auto new_end = std::remove_if(
+      fire_vector.begin(), fire_vector.end(),
+      [game_is_running](auto &fire) { return fire->isExpired(); });
+  fire_vector.erase(new_end, fire_vector.end());
 }

@@ -8,8 +8,11 @@ public:
   GamePicture(const sf::RenderWindow &window_, const std::string &path);
   static Ptr create(const sf::RenderWindow &window_, const std::string &path);
 
+  void removeFromGui();
+
   bool isWidgetInside(const tgui::Layout2d &position,
                       const tgui::Layout2d &size) const;
 
   void setIndexPosition(Index &&index);
+  Index getIndexPosition();
 };

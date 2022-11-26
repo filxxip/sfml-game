@@ -5,9 +5,19 @@
 #include "../../game/main_game_components/main_game_components.h"
 #include "../../picture/game_picture.h"
 #include "../bomb/bomb.h"
+#include "../box/data_classes.h"
+
+struct SignalHelper {
+  Index index;
+  int current_bomb_power;
+  SignalHelper() : index(EmptyIndex()) {}
+};
 
 class Player {
 public:
+  tgui::Signal own_signal;
+  tgui::Label customwidget;
+  SignalHelper signal_helper;
   enum class Movement { LEFT, RIGHT, UP, DOWN };
   std::unordered_map<Movement, std::pair<double, double>>
       movement_keyboard_values{{Player::Movement::DOWN, {0, 0.1}},
@@ -37,7 +47,8 @@ private:
   int speed_rate = 5;
   Bomb::BombType bomb_selector = Bomb::BombType::TIME;
   std::vector<Bomb::BombType> bomb_options{
-      Bomb::BombType::TIME, Bomb::BombType::CLICK, Bomb::BombType::HEART};
+      Bomb::BombType::TIME, Bomb::BombType::CLICK, Bomb::BombType::HEART,
+      Bomb::BombType::MYSTERY};
 
   MainGameComponents &components;
   GamePicture::Ptr picture;

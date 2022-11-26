@@ -35,3 +35,9 @@ bool GamePicture::isWidgetInside(const tgui::Layout2d &position,
 void GamePicture::setIndexPosition(Index &&index) {
   setPosition(index.convertToPosition(getSize().x, getSize().y));
 }
+
+Index GamePicture::getIndexPosition() {
+  return Index::getIndexFromPosition(getPosition(), getSize());
+}
+
+void GamePicture::removeFromGui() {}

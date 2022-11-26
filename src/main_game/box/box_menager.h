@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../../game/main_game_components/main_game_components.h"
+#include "../../main_game/bomb/fire.h"
 #include "../../picture/picture.h"
 #include "../player/player.h"
 #include "data_classes.h"
@@ -18,6 +19,7 @@ public:
   Range maximum_elements_y;
 
   std::vector<Box::Ptr> box_vector;
+  // std::vector<Fire::Ptr> fire_vector;
 
 public:
   BoxMenagerPart(Range &&x_range_, Range &&y_range_);
@@ -29,19 +31,24 @@ public:
   bool isWidgetInsideAnyBox(const tgui::Layout2d &layout,
                             const tgui::Layout2d &size) const;
   void addBox(Box::Ptr box);
+  // void
 
   void destroy(MainGameComponents &components_);
 };
 
 class BoxMenager {
 private:
+  std::vector<Fire::Ptr> fire_vector;
   std::vector<BoxMenagerPart> menager_vector;
+
   MainGameComponents &components;
   const Player &player;
 
   void inittializeBoxes(int count);
   void createEdges();
   void addBox(Index &&positions, BoxFactory::Types type);
+
+  void backendFireCreator(Index &&init_index, bool &condition);
 
 public:
   BoxMenager(MainGameComponents &components_, const Player &player_);
@@ -52,8 +59,14 @@ public:
                       const tgui::Layout2d &size) const;
   bool isPositionFree(const tgui::Layout2d &layout) const;
 
-  bool areIndexesFree(Index &&indexes) const;
+  bool areIndexesFree(const Index &indexes) const;
   void remove();
 
+  void createWholeFire(Index &&init_index, int bomb_power);
+  void createFire(Index &&index);
+  void checkFiresExpired(bool game_is_running);
+
   void createBoard();
+
+  void removeEveryExpiredFire();
 };

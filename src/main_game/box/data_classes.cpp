@@ -45,3 +45,21 @@ bool Index::isValid() const {
 
 int Index::getX() const { return x; }
 int Index::getY() const { return y; }
+
+Index Index::getIndexFromPosition(CustomPicture::Ptr picture) {
+  return getIndexFromPosition(picture->getSize(), picture->getPosition());
+}
+
+Index Index::getIndexFromPosition(tgui::Layout2d &&size,
+                                  tgui::Layout2d &&position) {
+  auto x =
+      (position.x + 0.5 * size.x) / BoxData::ScaleMenager::getIndexBoxWidth();
+  auto y =
+      (position.y + 0.5 * size.y) / BoxData::ScaleMenager::getIndexBoxHeight();
+  return Index(x.getValue(), y.getValue());
+}
+Index Index::operator+(const Index &other_index) {
+  auto new_x = x + other_index.getX();
+  auto new_y = y + other_index.getY();
+  return Index(new_x, new_y);
+}

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../../../data/config_file.h"
+#include "../../picture/picture.h"
 #include "TGUI/Widget.hpp"
 #include "string"
 
@@ -33,4 +34,15 @@ public:
 
   int getX() const;
   int getY() const;
+
+  Index operator+(const Index &other_index);
+
+  static Index getIndexFromPosition(CustomPicture::Ptr picture);
+  static Index getIndexFromPosition(tgui::Layout2d &&size,
+                                    tgui::Layout2d &&position);
+};
+
+class EmptyIndex : public Index {
+public:
+  EmptyIndex() : Index(-1, -1) {}
 };

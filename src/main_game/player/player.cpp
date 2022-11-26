@@ -8,13 +8,10 @@
 
 Player::Player(MainGameComponents &components_)
     : components(components_),
-      picture(GamePicture::create(components.window, Paths::BOMBER_PLAYER)) {}
+      picture(GamePicture::create(components.window, Paths::BOMBER_PLAYER)),
+      own_signal("my_signal_for_fire", 1) {}
 
 const GamePicture::Ptr &Player::getImage() const { return picture; }
-
-// void Player::setVisible(bool status) { picture->setVisible(status); }
-
-// bool Player::isVisible() const { return picture->isVisible(); }
 
 void Player::move(Movement direction) {
   auto new_position = getPredictedNewPosition(direction);
@@ -81,18 +78,24 @@ void Player::putBomb() {
 void Player::setNextBombOption() {
   auto index =
       std::find(bomb_options.begin(), bomb_options.end(), bomb_selector);
-  bomb_selector =
-      index == bomb_options.end() ? bomb_options.at(0) : *std::next(index);
+  bomb_selector = index == std::prev(bomb_options.end()) ? bomb_options.at(0)
+                                                         : *std::next(index);
 }
 
 void Player::checkBombsExpired(bool game_is_running) {
   for (auto &bomb : bombs) {
-    if (bomb->isExpired(game_is_running)) {
+    bomb->measure(game_is_running);
+    bomb->checkSnapShot();
+    if (bomb->isExpired()) {
       bomb->execute();
+
+      signal_helper.index = Index::getIndexFromPosition(bomb->getPicture());
+      signal_helper.current_bomb_power = bomb->getPower();
+      own_signal.emit(&customwidget);
     }
   }
   auto new_end = std::remove_if(bombs.begin(), bombs.end(),
-                                [](auto &bomb) { return bomb->isExecuted(); });
+                                [](auto &bomb) { return bomb->isExpired(); });
   bombs.erase(new_end, bombs.end());
 }
 

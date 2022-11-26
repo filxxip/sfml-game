@@ -42,6 +42,8 @@ private:
   DownPanel panel;
   BoxMenager box_menager;
 
+  // void connectBombsSignal(tgui::Signal &signal);
+
 public:
   tgui::Signal own_signal;
   tgui::Label customwidget;

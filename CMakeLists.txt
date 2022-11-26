@@ -27,6 +27,7 @@ add_executable(${PROJECT_NAME}
     src/main_game/player/player.cpp
     src/main_game/main_game.cpp
     src/main_game/bomb/bomb.cpp
+    src/main_game/bomb/fire.cpp
     src/main_game/bomb/click_bomb/click_bomb.cpp
     src/main_game/bomb/time_bomb/standard_time_bomb.cpp
     src/main_game/bomb/time_bomb/random_bomb/random_bomb.cpp
@@ -35,6 +36,7 @@ add_executable(${PROJECT_NAME}
     src/main_game/box/box.cpp
     src/main_game/box/box_menager.cpp
     src/main_game/box/data_classes.cpp
+    src/main_game/timer/timer.cpp
     data/config_file.cpp
     sfml.cpp
 )

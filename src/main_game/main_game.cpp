@@ -11,9 +11,13 @@ MainGame::MainGame(MainGameComponents &components_)
 void MainGame::initialize() {
   state = State::RUNNING;
   // components.gui.add(player.getImage());
-  BoxData::ScaleMenager::changeOption(BoxData::SizeOptions::NORMAL);
+  BoxData::ScaleMenager::changeOption(BoxData::SizeOptions::AVERAGE);
   box_menager.initialize();
   player.initialize();
+  player.own_signal.connect([this]() {
+    box_menager.createWholeFire(std::move(player.signal_helper.index),
+                                player.signal_helper.current_bomb_power);
+  });
   panel.initialize();
   components.background.setImage(Paths::GAME_BACKGROUND);
 }
@@ -42,6 +46,11 @@ void MainGame::movePlayerIfValidNewPosition(Player::Movement movement) {
     player.move(movement);
   }
 }
+
+// void MainGame::connectBombsSignal(tgui::Signal &signal) {
+//   signal.connect(
+//       [this](auto index) { return box_menager.areIndexesFree(index); });
+// }
 
 void MainGame::movePlayer() {
   if (isRunning()) {
@@ -97,7 +106,10 @@ void MainGame::doPlayerActivities() {
   }
 }
 
-void MainGame::checkBombs() { player.checkBombsExpired(isRunning()); }
+void MainGame::checkBombs() {
+  player.checkBombsExpired(isRunning());
+  box_menager.checkFiresExpired(isRunning());
+}
 
 void MainGame::checkPause() {
   if (isRunning() && active_messagebox->expired() &&

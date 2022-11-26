@@ -25,6 +25,7 @@ constexpr char MENU_STYLE[] = "../themes/menu.style";
 constexpr char MESSAGE_BOX_STYLE[] = "../themes/messagebox.style";
 constexpr char BOX_PATH[] = "../images/box.png";
 constexpr char STONE[] = "../images/stone.png";
+constexpr char FIRE[] = "../images/fire.png";
 } // namespace Paths
 
 namespace RendererNames {
@@ -147,6 +148,7 @@ private:
 
 namespace BombData {
 constexpr int STANDARD_LIVE_TIME = 3000;
+constexpr int FIRE_ACTIVE_TIME = 1000;
 constexpr int MINIMUM_LIVE_TIME = 1000;
 constexpr int MAXIMUM_RANDOM_LIVE_TIME = 10000;
 constexpr int SNAPSHOTTING_START = 1000;
