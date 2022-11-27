@@ -41,8 +41,8 @@ const Player &MainGame::getPlayer() const { return player; }
 
 void MainGame::movePlayerIfValidNewPosition(Player::Movement movement) {
   auto potential_new_position = player.getPredictedNewPosition(movement);
-  if (box_menager.isPositionFree(potential_new_position,
-                                 player.getImage()->getSize())) {
+  if (box_menager.isEntirePositionFree(potential_new_position,
+                                       player.getImage()->getSize())) {
     player.move(movement);
   }
 }

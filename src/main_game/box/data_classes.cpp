@@ -34,14 +34,14 @@ tgui::Layout2d Index::convertToPosition(double element_size_x,
       y * BoxData::ScaleMenager::getIndexBoxHeight() +
           0.5 * (BoxData::ScaleMenager::getIndexBoxHeight() - element_size_y));
 }
-bool Index::isValid() const {
-  if (x > 0 && x < BoxData::ScaleMenager::getMaxXIndex()) {
-    if (y > 0 && y < BoxData::ScaleMenager::getMaxYIndex()) {
-      return true;
-    }
-  }
-  return false;
-}
+// bool Index::isValid() const {
+//   if (x > 0 && x < BoxData::ScaleMenager::getMaxXIndex()) {
+//     if (y > 0 && y < BoxData::ScaleMenager::getMaxYIndex()) {
+//       return true;
+//     }
+//   }
+//   return false;
+// }
 
 int Index::getX() const { return x; }
 int Index::getY() const { return y; }

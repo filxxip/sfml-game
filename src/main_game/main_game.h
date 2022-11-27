@@ -17,9 +17,6 @@ public:
   void initialize();
   void remove();
   const bool isInitialized() const;
-
-  //   void setVisible(bool status);
-  //   bool isVisible() const;
   const Player &getPlayer() const;
 
   void movePlayer();
@@ -41,8 +38,6 @@ private:
   Player player;
   DownPanel panel;
   BoxMenager box_menager;
-
-  // void connectBombsSignal(tgui::Signal &signal);
 
 public:
   tgui::Signal own_signal;

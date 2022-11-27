@@ -1,12 +1,12 @@
 #include "game_picture.h"
 
-GamePicture::GamePicture(const sf::RenderWindow &window_,
+GamePicture::GamePicture(MainGameComponents &components_,
                          const std::string &path)
-    : CustomPicture(window_, path) {}
+    : components(components_), CustomPicture(components_.window, path) {}
 
-GamePicture::Ptr GamePicture::create(const sf::RenderWindow &window_,
+GamePicture::Ptr GamePicture::create(MainGameComponents &components_,
                                      const std::string &path) {
-  return std::make_shared<GamePicture>(window_, path);
+  return std::make_shared<GamePicture>(components_, path);
 }
 
 bool GamePicture::isWidgetInside(const tgui::Layout2d &position,
@@ -39,5 +39,3 @@ void GamePicture::setIndexPosition(Index &&index) {
 Index GamePicture::getIndexPosition() {
   return Index::getIndexFromPosition(getPosition(), getSize());
 }
-
-void GamePicture::removeFromGui() {}

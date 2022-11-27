@@ -8,7 +8,7 @@
 
 Player::Player(MainGameComponents &components_)
     : components(components_),
-      picture(GamePicture::create(components.window, Paths::BOMBER_PLAYER)),
+      picture(GamePicture::create(components, Paths::BOMBER_PLAYER)),
       own_signal("my_signal_for_fire", 1) {}
 
 const GamePicture::Ptr &Player::getImage() const { return picture; }
@@ -35,7 +35,13 @@ void Player::initialize() {
   picture->setIndexPosition(Index(1, 1));
 }
 
-void Player::remove() { components.gui.remove(picture); }
+// void Player::remove() {
+//   for (auto &bomb : bombs) {
+//     components.gui.remove(bomb->getPicture());
+//   }
+//   bombs.clear();
+//   components.gui.remove(picture);
+// }
 
 bool Player::isYValid(double new_y) const {
   return new_y > 0 && new_y < components.window.getSize().y -
@@ -83,6 +89,7 @@ void Player::setNextBombOption() {
 }
 
 void Player::checkBombsExpired(bool game_is_running) {
+  std::cout << bombs.size() << "otooo" << std::endl;
   for (auto &bomb : bombs) {
     bomb->measure(game_is_running);
     bomb->checkSnapShot();
@@ -104,4 +111,5 @@ void Player::removeEachItem() {
   for (auto &bomb : bombs) {
     bomb->destroyFromGUI();
   }
+  bombs.clear();
 }

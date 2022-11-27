@@ -30,7 +30,7 @@ public:
   tgui::Layout2d convertToPosition(double element_size) const;
   tgui::Layout2d convertToPosition(double element_size_x,
                                    double element_size_y) const;
-  bool isValid() const;
+  // bool isValid() const;
 
   int getX() const;
   int getY() const;

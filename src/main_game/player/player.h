@@ -29,7 +29,6 @@ public:
   const GamePicture::Ptr &getImage() const;
   void move(Movement direction);
   void initialize();
-  void remove();
 
   void putBomb();
 
