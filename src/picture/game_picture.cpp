@@ -37,5 +37,5 @@ void GamePicture::setIndexPosition(Index &&index) {
 }
 
 Index GamePicture::getIndexPosition() {
-  return Index::getIndexFromPosition(getPosition(), getSize());
+  return Index::getIndexFromPosition(getSize(), getPosition());
 }

@@ -2,7 +2,7 @@
 #include "../../../data/config_file.h"
 // #include "fire.h"
 
-const std::unordered_map<Bomb::BombType, std::string> Bomb::bomb_names{
+const std::map<Bomb::BombType, std::string> Bomb::bomb_names{
     {Bomb::BombType::TIME, Paths::BOMB_PATH},
     {Bomb::BombType::CLICK, Paths::CLICK_BOMB_PATH},
     {Bomb::BombType::HEART, Paths::HEART_BOMB_PATH},

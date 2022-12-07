@@ -1,0 +1,9 @@
+{
+    "size_width": 350,
+    "size_height": 110,
+    "button_render_name": "ExitMessageBoxButtons",
+    "messagebox_render_name": "ExitMessageBox",
+    "content": "Thank you for this game, good luck next time!",
+    "title": "Game Over",
+    "text_size": 18
+}

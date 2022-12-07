@@ -10,14 +10,15 @@
 #include <TGUI/Widget.hpp>
 #include <string>
 #include <utility>
-class PartMenager {
+
+template <typename T> class PartMenager {
   Range x_range;
   Range y_range;
   Range maximum_elements_x;
   Range maximum_elements_y;
 
 protected:
-  std::vector<GamePicture::Ptr> box_vector;
+  std::vector<T> box_vector;
   MainGameComponents &components;
 
 public:
@@ -28,6 +29,7 @@ public:
   PartMenager(MainGameComponents &components_);
   bool canBeInSpace(const tgui::Layout2d &layout,
                     const tgui::Layout2d &size) const;
+  bool containIndex(const Index &index) const;
 
   bool canBeInsideAnyItem(const tgui::Layout2d &layout,
                           const tgui::Layout2d &size) const;
@@ -36,68 +38,48 @@ public:
 
   bool isPositionFree(const tgui::Layout2d &layout,
                       const tgui::Layout2d &size) const;
-  void addItem(GamePicture::Ptr item);
+  void addItem(T item);
 
   void destroy();
   void checkExpired(bool game_is_running);
   void removeEveryExpiredItem(bool game_is_running);
+  void checkAndRemoveExpiredItems(bool game_is_running);
 };
 
-// class FireMenager : public PartMenager {
+class BoxesPartMenager : public PartMenager<LiveItem::Ptr> {
+public:
+  BoxesPartMenager(MainGameComponents &components_, Range &&x_range_,
+                   Range &&y_range_)
+      : PartMenager<LiveItem::Ptr>(components_, std::move(x_range_),
+                                   std::move(y_range_)) {}
 
-//   public:
-//   void createWholeFire(Index &&init_index, int bomb_power);
-//   void checkFiresExpired(bool game_is_running);
-// };
-
-// class FireMenager : public PartMenager {
-// public:
-//   void checkFiresExpired(bool game_is_running);
-//   void removeEveryExpiredFire();
-// };
-
-// class BoxMenagerPart {
-// public:
-//   Range x_range;
-//   Range y_range;
-//   Range maximum_elements_x;
-//   Range maximum_elements_y;
-
-//   std::vector<Box::Ptr> box_vector;
-//   // std::vector<Fire::Ptr> fire_vector;
-
-// public:
-//   BoxMenagerPart(Range &&x_range_, Range &&y_range_);
-//   bool canBeInSpace(const tgui::Layout2d &layout,
-//                     const tgui::Layout2d &size) const;
-
-//   bool canBeInsideAnyBox(const tgui::Layout2d &layout,
-//                          const tgui::Layout2d &size) const;
-//   bool isWidgetInsideAnyBox(const tgui::Layout2d &layout,
-//                             const tgui::Layout2d &size) const;
-//   void addBox(Box::Ptr box);
-//   // void
-
-//   void destroy(MainGameComponents &components_);
-// };
+  void deacreaseIndexItemLive(const Index &index) {
+    for (auto &box : box_vector) {
+      if (box->getIndexPosition() == index) {
+        box->decreaseLives();
+      }
+    }
+  }
+};
 
 class BoxMenager {
 private:
-  PartMenager fire_menager;
-  std::vector<PartMenager> menager_vector;
+  PartMenager<Fire::Ptr> fire_menager;
+  std::vector<BoxesPartMenager> menager_vector;
 
   MainGameComponents &components;
-  const Player &player;
+  Player &player;
 
   void inittializeBoxes(int count);
   void createEdges();
   void createBoard();
-  void addItem(Index &&positions, GamePicture::Ptr &&item);
+  void addItem(Index &&positions, LiveItem::Ptr &&item);
 
-  void backendFireCreator(Index &&init_index, bool &condition);
+  void backendFireCreator(Index &&init_index, bool &condition,
+                          std::vector<Index> &checked_vectors);
 
 public:
-  BoxMenager(MainGameComponents &components_, const Player &player_);
+  BoxMenager(MainGameComponents &components_, Player &player_);
 
   void addBox(Index &&indexes);
   void addStone(Index &&indexes);
@@ -117,4 +99,6 @@ public:
 
   void createWholeFire(Index &&init_index, int bomb_power);
   void checkFiresExpired(bool game_is_running);
+  void checkBoxesExpired(bool game_is_running);
+  void checkPlayerOnFire(const Index &index);
 };

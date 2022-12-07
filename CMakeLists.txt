@@ -37,6 +37,7 @@ add_executable(${PROJECT_NAME}
     src/main_game/box/box_menager.cpp
     src/main_game/box/data_classes.cpp
     src/main_game/timer/timer.cpp
+    src/main_game/down_panel/down_panel_elements.cpp
     data/config_file.cpp
     sfml.cpp
 )

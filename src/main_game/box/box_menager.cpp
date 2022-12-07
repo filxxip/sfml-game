@@ -3,8 +3,9 @@
 
 #include "../../../data/config_file.h"
 
-PartMenager::PartMenager(MainGameComponents &components_, Range &&x_range_,
-                         Range &&y_range_)
+template <typename T>
+PartMenager<T>::PartMenager(MainGameComponents &components_, Range &&x_range_,
+                            Range &&y_range_)
     : x_range(x_range_), y_range(y_range_), components(components_),
       maximum_elements_x(
           {x_range.getMin() + (x_range.getMax() - x_range.getMin()) / 2,
@@ -13,12 +14,19 @@ PartMenager::PartMenager(MainGameComponents &components_, Range &&x_range_,
           {y_range.getMin() + (y_range.getMax() - y_range.getMin()) / 2,
            y_range.getMin() + (y_range.getMax() - y_range.getMin()) / 2}) {}
 
-PartMenager::PartMenager(MainGameComponents &components_)
+template <typename T>
+PartMenager<T>::PartMenager(MainGameComponents &components_)
     : PartMenager(components_, Range(0, components_.window.getSize().x),
                   Range(0, components_.window.getSize().y)) {}
 
-bool PartMenager::canBeInSpace(const tgui::Layout2d &layout,
-                               const tgui::Layout2d &size) const {
+template <typename T>
+bool PartMenager<T>::containIndex(const Index &index) const {
+  return canBeInSpace(index.convertToInitPosition(), index.getIndexSize());
+}
+
+template <typename T>
+bool PartMenager<T>::canBeInSpace(const tgui::Layout2d &layout,
+                                  const tgui::Layout2d &size) const {
   const auto x = layout.x.getValue();
   const auto y = layout.y.getValue();
   const auto x_max = layout.x.getValue() + size.x.getValue();
@@ -32,8 +40,9 @@ bool PartMenager::canBeInSpace(const tgui::Layout2d &layout,
   return true;
 }
 
-bool PartMenager::canBeInsideAnyItem(const tgui::Layout2d &layout,
-                                     const tgui::Layout2d &size) const {
+template <typename T>
+bool PartMenager<T>::canBeInsideAnyItem(const tgui::Layout2d &layout,
+                                        const tgui::Layout2d &size) const {
   const auto x = layout.x.getValue();
   const auto y = layout.y.getValue();
   const auto x_max = layout.x.getValue() + size.x.getValue();
@@ -47,7 +56,7 @@ bool PartMenager::canBeInsideAnyItem(const tgui::Layout2d &layout,
   return true;
 }
 
-void PartMenager::addItem(GamePicture::Ptr item) {
+template <typename T> void PartMenager<T>::addItem(T item) {
   auto position = item->getPosition();
   auto size = item->getSize();
   auto maximum_x = position.x + size.x;
@@ -67,8 +76,9 @@ void PartMenager::addItem(GamePicture::Ptr item) {
   box_vector.push_back(item);
 }
 
-bool PartMenager::isWidgetInsideAnyItem(const tgui::Layout2d &layout,
-                                        const tgui::Layout2d &size) const {
+template <typename T>
+bool PartMenager<T>::isWidgetInsideAnyItem(const tgui::Layout2d &layout,
+                                           const tgui::Layout2d &size) const {
   auto index = std::find_if(box_vector.begin(), box_vector.end(),
                             [&layout, &size](auto &box) {
                               return box->isWidgetInside(layout, size);
@@ -76,7 +86,7 @@ bool PartMenager::isWidgetInsideAnyItem(const tgui::Layout2d &layout,
   return index != box_vector.end();
 }
 
-void PartMenager::destroy() {
+template <typename T> void PartMenager<T>::destroy() {
 
   for (auto &item : box_vector) {
     components.gui.remove(item);
@@ -84,7 +94,8 @@ void PartMenager::destroy() {
   box_vector.clear();
 }
 
-void PartMenager::removeEveryExpiredItem(bool game_is_running) {
+template <typename T>
+void PartMenager<T>::removeEveryExpiredItem(bool game_is_running) {
   auto index = std::remove_if(box_vector.begin(), box_vector.end(),
                               [game_is_running](auto &fire) {
                                 return fire->isExpired(game_is_running);
@@ -92,30 +103,28 @@ void PartMenager::removeEveryExpiredItem(bool game_is_running) {
   box_vector.erase(index, box_vector.end());
 }
 
-void PartMenager::checkExpired(bool game_is_running) {
+template <typename T> void PartMenager<T>::checkExpired(bool game_is_running) {
   for (auto &fire : box_vector) {
-    // fire->measure(game_is_running);
     if (fire->isExpired(game_is_running)) {
-      components.gui.remove(fire); // to remoeve
+      components.gui.remove(fire);
     }
   }
-
-  auto new_end = std::remove_if(box_vector.begin(), box_vector.end(),
-                                [game_is_running](auto &fire) {
-                                  return fire->isExpired(game_is_running);
-                                });
-  box_vector.erase(
-      new_end,
-      box_vector.end()); // wywalic sprawdzenie indeksow i tak bez sensu
 }
 
-bool PartMenager::isPositionFree(const tgui::Layout2d &layout,
-                                 const tgui::Layout2d &size) const {
+template <typename T>
+void PartMenager<T>::checkAndRemoveExpiredItems(bool game_is_running) {
+  checkExpired(game_is_running);
+  removeEveryExpiredItem(game_is_running);
+}
+
+template <typename T>
+bool PartMenager<T>::isPositionFree(const tgui::Layout2d &layout,
+                                    const tgui::Layout2d &size) const {
   return !(canBeInsideAnyItem(layout, size) &&
            isWidgetInsideAnyItem(layout, size));
 }
 
-BoxMenager::BoxMenager(MainGameComponents &components_, const Player &player_)
+BoxMenager::BoxMenager(MainGameComponents &components_, Player &player_)
     : components(components_), player(player_), fire_menager(components_) {}
 
 void BoxMenager::inittializeBoxes(int count) {
@@ -132,8 +141,9 @@ void BoxMenager::inittializeBoxes(int count) {
     double init_width = 0;
     double end_width = width;
     for (int j = 0; j < count; j++) {
-      menager_vector.push_back(PartMenager(components, {init_width, end_width},
-                                           {init_height, end_height}));
+      auto item = BoxesPartMenager(components, {init_width, end_width},
+                                   {init_height, end_height});
+      menager_vector.push_back(std::move(item));
       init_width += width;
       end_width += width;
     }
@@ -179,14 +189,13 @@ void BoxMenager::remove() {
   fire_menager.destroy();
   menager_vector.clear();
 }
-void BoxMenager::addItem(Index &&index, GamePicture::Ptr &&item) {
+void BoxMenager::addItem(Index &&index, LiveItem::Ptr &&item) {
   auto pos = index.convertToPosition();
   if (isPositionFree(pos)) {
     item->setIndexPosition(std::move(index));
     components.gui.add(item);
     for (auto &menager_box : menager_vector) {
       if (menager_box.canBeInSpace(pos, item->getSize())) {
-        std::cout << "hello" << std::endl;
         menager_box.addItem(item);
       }
     }
@@ -210,7 +219,7 @@ void BoxMenager::createEdges() {
   }
 }
 void BoxMenager::initialize() {
-  inittializeBoxes(15);
+  inittializeBoxes(5);
   createBoard();
   createEdges();
 }
@@ -242,50 +251,68 @@ bool BoxMenager::areIndexesFree(const Index &indexes) const {
   return isPositionFree(indexes.convertToPosition());
 }
 
-void BoxMenager::backendFireCreator(Index &&init_index, bool &condition) {
+void BoxMenager::backendFireCreator(Index &&init_index, bool &condition,
+                                    std::vector<Index> &checked_vectors) {
   if (condition) {
     if (areIndexesFree(init_index)) {
+      checkPlayerOnFire(init_index);
       addFire(std::move(init_index));
     } else {
+      for (auto &box : menager_vector) {
+        if (std::find(checked_vectors.begin(), checked_vectors.end(),
+                      init_index) == checked_vectors.end()) {
+          if (box.containIndex(init_index)) {
+            box.deacreaseIndexItemLive(init_index);
+            checked_vectors.push_back(std::move(init_index));
+          }
+        }
+      }
       condition = false;
     }
   }
 }
 
+void BoxMenager::checkPlayerOnFire(const Index &index) {
+  if (player.getImage()->getIndexPosition() == index) {
+    player.emitRemoveHeartSignal();
+    player.setGhost(true);
+  }
+}
+
 void BoxMenager::createWholeFire(Index &&init_index, int bomb_power) {
+  std::vector<Index> ill_indexes;
   bool is_right_path_free = true;
   bool is_left_path_free = true;
   bool is_up_path_free = true;
   bool is_down_path_free = true;
-  backendFireCreator(init_index + Index(0, 0), is_down_path_free);
-  // std::cout << bomb_power << std::endl;
+  backendFireCreator(init_index + Index(0, 0), is_down_path_free, ill_indexes);
   for (int i = 1; i < bomb_power; i++) {
-    backendFireCreator(init_index + Index(0, i), is_down_path_free);
-    backendFireCreator(init_index + Index(i, 0), is_right_path_free);
-    backendFireCreator(init_index + Index(-i, 0), is_left_path_free);
-    backendFireCreator(init_index + Index(0, -i), is_up_path_free);
+    backendFireCreator(init_index + Index(0, i), is_down_path_free,
+                       ill_indexes);
+    backendFireCreator(init_index + Index(i, 0), is_right_path_free,
+                       ill_indexes);
+    backendFireCreator(init_index + Index(-i, 0), is_left_path_free,
+                       ill_indexes);
+    backendFireCreator(init_index + Index(0, -i), is_up_path_free, ill_indexes);
   }
+
+  checkFiresExpired(true);
+  checkBoxesExpired(true);
 }
 
 void BoxMenager::addFire(Index &&index) {
-  // std::cout << "tworze" << std::endl;
   auto fire = Fire::create(components);
   fire->setIndexPosition(std::move(index));
   components.gui.add(fire);
   fire_menager.addItem(std::move(fire));
-  // fire_menager.push_back(std::move(fire));
 }
 
-// void FireMenager::removeEveryExpiredFire() {
-//   auto index = std::remove_if(box_vector.begin(), box_vector.end(),
-//                               [](auto &fire) { return fire->isExpired(); });
-//   box_vector.erase(index, box_vector.end());
-// }
-
 void BoxMenager::checkFiresExpired(bool game_is_running) {
-  fire_menager.checkExpired(game_is_running);
-  // auto new_end = std::remove_if(
-  //     box_vector.begin(), box_vector.end(),
-  //     [game_is_running](auto &fire) { return fire->isExpired(); });
-  // box_vector.erase(new_end, fire_vector.end());
+  fire_menager.checkAndRemoveExpiredItems(game_is_running);
+}
+
+void BoxMenager::checkBoxesExpired(bool game_is_running) {
+  for (auto &box : menager_vector) {
+    box.checkAndRemoveExpiredItems(game_is_running);
+  }
 }

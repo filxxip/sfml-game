@@ -1,21 +1,65 @@
 #include "box.h"
 #include "../../../data/config_file.h"
 
-// Box::Box(MainGameComponents &components_, const std::string &path)
-//     : components(components_),
-//       picture(GamePicture::create(components.window, path)) {
-//   picture->setSize({BoxData::ScaleMenager::getBoxSize(),
-//                     BoxData::ScaleMenager::getBoxSize()});
-// }
+GamePicture::Ptr BoxFactory::create(MainGameComponents &components_,
+                                    Types type) {
+  std::string path;
+  switch (type) {
+  case Types::BOX: {
+    path = Paths::BOX_PATH;
+    break;
+  }
+  case Types::STONE: {
+    path = Paths::STONE;
+    break;
+  }
+  }
+  return GamePicture::create(components_, path);
+}
 
-// void Box::put(double position_x, double position_y) {
-//   picture->setPosition(position_x, position_y);
-//   components.gui.add(picture);
-// }
+Box::Box(MainGameComponents &components_)
+    : LiveItem(components_, Paths::BOX_PATH, 1) {
+  setSize({BoxData::ScaleMenager::getBoxSize(),
+           BoxData::ScaleMenager::getBoxSize()});
+};
+LiveItem::Ptr Box::create(MainGameComponents &components_) {
+  auto box = std::make_shared<Box>(components_);
+  return box;
+}
 
-// bool Box::isWidgetInside(const tgui::Layout2d &layout,
-//                          const tgui::Layout2d &size) const {
-//   return picture->isWidgetInside(layout, size);
-// }
+Stone::Stone(MainGameComponents &components_)
+    : LiveItem(components_, Paths::STONE, 5) {
+  setSize({BoxData::ScaleMenager::getBoxSize(),
+           BoxData::ScaleMenager::getBoxSize()});
+}
 
-// GamePicture::Ptr &Box::getPicture() { return picture; }
+LiveItem::Ptr Stone::create(MainGameComponents &components_) {
+  auto stone = std::make_shared<Stone>(components_);
+  return stone;
+}
+
+LiveItem::LiveItem(MainGameComponents &components_, const std::string &path,
+                   int initial_lives)
+    : lives(initial_lives), TimeItem(components_, path) {
+  //   timer.meas
+}
+
+int LiveItem::getRemainLives() { return lives; }
+void LiveItem::decreaseLives() {
+  if (lives > 0) {
+    lives--;
+  };
+}
+
+void LiveItem::initializeEnd() {
+  setLiveTime(1000);
+  timer.run();
+  lives = -1;
+  setPicture(Paths::FIRE);
+}
+bool LiveItem::isExpired(bool game_is_running) {
+  if (lives == 0) {
+    initializeEnd();
+  }
+  return TimeItem::isExpired(game_is_running);
+}

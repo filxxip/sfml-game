@@ -17,5 +17,8 @@ public:
 
   void setIndexPosition(Index &&index);
   Index getIndexPosition();
-  virtual bool isExpired(bool game_is_running) { return false; }
+  virtual bool isExpired(bool game_is_running) {
+    std::cout << "czy ja to aktywuje?" << std::endl;
+    return false;
+  }
 };

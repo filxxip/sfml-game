@@ -10,7 +10,7 @@ double Range::getMin() const { return min; }
 
 void Range::setMin(double new_min) { min = new_min; }
 
-std::string Range::toString() {
+std::string Range::toString() const {
   return "range: (" + std::to_string(min) + " , " + std::to_string(max) + ")";
 }
 
@@ -34,6 +34,13 @@ tgui::Layout2d Index::convertToPosition(double element_size_x,
       y * BoxData::ScaleMenager::getIndexBoxHeight() +
           0.5 * (BoxData::ScaleMenager::getIndexBoxHeight() - element_size_y));
 }
+
+tgui::Layout2d Index::convertToInitPosition() const {
+
+  return tgui::Layout2d(x * BoxData::ScaleMenager::getIndexBoxWidth(),
+                        y * BoxData::ScaleMenager::getIndexBoxHeight());
+}
+
 // bool Index::isValid() const {
 //   if (x > 0 && x < BoxData::ScaleMenager::getMaxXIndex()) {
 //     if (y > 0 && y < BoxData::ScaleMenager::getMaxYIndex()) {
@@ -62,4 +69,12 @@ Index Index::operator+(const Index &other_index) {
   auto new_x = x + other_index.getX();
   auto new_y = y + other_index.getY();
   return Index(new_x, new_y);
+}
+
+bool Index::operator==(const Index &other_index) {
+  return other_index.getX() == x && other_index.getY() == y;
+}
+
+std::string Index::toString() const {
+  return "index: (" + std::to_string(x) + " , " + std::to_string(y) + ")";
 }

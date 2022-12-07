@@ -9,7 +9,8 @@
 Player::Player(MainGameComponents &components_)
     : components(components_),
       picture(GamePicture::create(components, Paths::BOMBER_PLAYER)),
-      own_signal("my_signal_for_fire", 1) {}
+      own_signal("my_signal_for_fire", 1), addHeartSignal("my_heart_signal"),
+      removeHeartSignal("my_remove_heart_signal") {}
 
 const GamePicture::Ptr &Player::getImage() const { return picture; }
 
@@ -21,6 +22,15 @@ void Player::move(Movement direction) {
   }
 }
 
+void Player::setGhost(bool value) {
+  if (value) {
+    picture->getRenderer()->setOpacity(0.75);
+  } else {
+    picture->getRenderer()->setOpacity(1);
+  }
+  ghost = value;
+}
+
 const tgui::Layout2d Player::getPredictedNewPosition(Movement direction) {
   auto [x, y] = movement_keyboard_values.at(direction);
   auto [current_x, current_y] = picture->getPosition();
@@ -29,6 +39,7 @@ const tgui::Layout2d Player::getPredictedNewPosition(Movement direction) {
   return tgui::Layout2d(new_x, new_y);
 }
 void Player::initialize() {
+  setGhost(false);
   components.gui.add(picture);
   picture->setSize(BoxData::ScaleMenager::getPlayerSize(),
                    BoxData::ScaleMenager::getPlayerSize());
@@ -53,23 +64,26 @@ bool Player::isXValid(double new_x) const {
                                   BoxData::ScaleMenager::getPlayerSize();
 }
 
-void Player::putBomb() {
+void Player::putBomb(Bomb::BombType type) {
   Bomb::Ptr bomb;
 
-  switch (bomb_selector) {
+  switch (type) {
   case Bomb::BombType::CLICK: {
     bomb = ClickBomb::create(components);
     break;
   }
   case Bomb::BombType::TIME: {
+    std::cout << "sdassfs" << std::endl;
     bomb = StandardTimeBomb::create(components);
     break;
   }
   case Bomb::BombType::MYSTERY: {
+    std::cout << "hello2" << std::endl;
     bomb = RandomTimeBomb::create(components);
     break;
   }
   case Bomb::BombType::HEART: {
+    std::cout << "hello" << std::endl;
     bomb = HeartBomb::create(components);
     break;
   }
@@ -82,14 +96,17 @@ void Player::putBomb() {
 }
 
 void Player::setNextBombOption() {
+  std::cout << "xxx" << std::endl;
   auto index =
-      std::find(bomb_options.begin(), bomb_options.end(), bomb_selector);
-  bomb_selector = index == std::prev(bomb_options.end()) ? bomb_options.at(0)
-                                                         : *std::next(index);
+      std::find_if(Bomb::bomb_names.begin(), Bomb::bomb_names.end(),
+                   [this](auto &pair) { return bomb_selector == pair.first; });
+  bomb_selector = index == std::prev(Bomb::bomb_names.end())
+                      ? Bomb::BombType::TIME
+                      : std::next(index)->first;
+  std::cout << "xxx" << std::endl;
 }
 
 void Player::checkBombsExpired(bool game_is_running) {
-  std::cout << bombs.size() << "otooo" << std::endl;
   for (auto &bomb : bombs) {
     bomb->measure(game_is_running);
     bomb->checkSnapShot();

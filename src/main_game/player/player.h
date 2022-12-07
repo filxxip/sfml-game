@@ -16,6 +16,8 @@ struct SignalHelper {
 class Player {
 public:
   tgui::Signal own_signal;
+  tgui::Signal addHeartSignal;
+  tgui::Signal removeHeartSignal;
   tgui::Label customwidget;
   SignalHelper signal_helper;
   enum class Movement { LEFT, RIGHT, UP, DOWN };
@@ -30,7 +32,7 @@ public:
   void move(Movement direction);
   void initialize();
 
-  void putBomb();
+  void putBomb(Bomb::BombType type);
 
   void checkBombsExpired(bool game_is_running);
 
@@ -39,8 +41,18 @@ public:
   const tgui::Layout2d getPredictedNewPosition(Movement direction);
   void removeEachItem();
   Bomb::BombType getCurrentBomb() const { return bomb_selector; }
+  void emitAddHeartSignal() { addHeartSignal.emit(&customwidget); }
+  void emitRemoveHeartSignal() { removeHeartSignal.emit(&customwidget); }
+  void setGhost(bool value);
+  bool isGhost() const { return ghost; }
+  int getFreeBombs() const { return maximum_bombs - bombs.size(); }
+  int getMaxBombx() const { return maximum_bombs; }
+  int getUsedBombs() const { return bombs.size(); }
 
 private:
+  int free_bombs;
+  int maximum_bombs;
+  bool ghost = false;
   bool isYValid(double new_y) const;
   bool isXValid(double new_x) const;
   int speed_rate = 5;

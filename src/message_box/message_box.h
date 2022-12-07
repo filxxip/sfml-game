@@ -38,8 +38,10 @@ public:
   bool defaultIsInOptions();
 
   static Ptr create(MainGameComponents &components);
+  void setEscapeKey(bool value) { message_box_escape_key = value; }
 
 private:
+  bool message_box_escape_key = true;
   MainGameComponents &components;
   MessageBoxButton *default_button;
   void addButton(const std::string &name, std::function<void()> command,
@@ -66,10 +68,6 @@ public:
       active_messagebox.lock()->checkEscape();
     }
   }
-
-  // private:
-  //   void checkEnter() { active_messagebox.lock()->checkEnter(); }
-  //   void checkEscape() { active_messagebox.lock()->checkEscape(); }
 
 public:
   std::weak_ptr<CustomMessageBox> *operator->() { return &active_messagebox; }

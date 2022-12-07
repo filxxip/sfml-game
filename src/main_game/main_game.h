@@ -32,11 +32,14 @@ public:
   void doPlayerActivities();
   void checkBombs();
 
+  void gameOver();
+
 private:
   MainGameComponents &components;
   State state = State::RUNNING;
   Player player;
-  DownPanel panel;
+  BombPanel bomb_panel;
+  HeartPanel heart_panel;
   BoxMenager box_menager;
 
 public:

@@ -43,6 +43,7 @@ constexpr char RESUME[] = "../data/json/resume_messagebox.json";
 constexpr char NEW_GAME[] = "../data/json/new_game_messagebox.json";
 constexpr char EXIT_GAME[] = "../data/json/exit_game_messagebox.json";
 constexpr char EXIT_APP[] = "../data/json/exit_messagebox.json";
+constexpr char GAME_OVER[] = "../data/json/game_over_messagebox.json";
 } // namespace Json
 
 namespace JsonNames {

@@ -16,6 +16,9 @@ public:
 
   void measure(bool is_game_running);
   int getLasts() const;
-  void run() { timer_is_running = true; }
+  void run() {
+    last_measure = time::now();
+    timer_is_running = true;
+  }
   void stop() { timer_is_running = false; }
 };

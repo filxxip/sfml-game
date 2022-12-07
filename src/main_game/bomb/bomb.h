@@ -21,7 +21,7 @@ protected:
 
 public:
   enum class BombType { UNDEFINED = -1, TIME, CLICK, HEART, MYSTERY };
-  static const std::unordered_map<BombType, std::string> bomb_names;
+  static const std::map<BombType, std::string> bomb_names;
   using Ptr = std::unique_ptr<Bomb>;
 
   Bomb(MainGameComponents &components_);

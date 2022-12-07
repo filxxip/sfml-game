@@ -6,28 +6,55 @@
 
 MainGame::MainGame(MainGameComponents &components_)
     : components(components_), player(components_), own_signal("ClosingWindow"),
-      panel(components), box_menager(components, player) {}
-
-void MainGame::initialize() {
-  state = State::RUNNING;
-  // components.gui.add(player.getImage());
-  BoxData::ScaleMenager::changeOption(BoxData::SizeOptions::AVERAGE);
-  box_menager.initialize();
-  player.initialize();
+      bomb_panel(components), heart_panel(components),
+      box_menager(components, player) {
   player.own_signal.connect([this]() {
     box_menager.createWholeFire(std::move(player.signal_helper.index),
                                 player.signal_helper.current_bomb_power);
   });
-  panel.initialize();
+  // player.addHeartSignal.connect([this]() { panel.addHeart(); });
+  player.removeHeartSignal.connect([this]() {
+    heart_panel.switchOnNextElement();
+    if (heart_panel.getActiveElementNumber() <= 0) {
+      gameOver();
+    }
+  });
+}
+
+void MainGame::initialize() {
+  state = State::RUNNING;
+  // components.gui.add(player.getImage());
+  BoxData::ScaleMenager::changeOption(BoxData::SizeOptions::NORMAL);
+  box_menager.initialize();
+  player.initialize();
+  bomb_panel.initialize();
+  heart_panel.initialize();
   components.background.setImage(Paths::GAME_BACKGROUND);
 }
 
+void MainGame::gameOver() {
+  state = State::PAUSE;
+  auto exit_pair =
+      std::make_pair(CustomMessageBox::Options::EXIT, [this]() { remove(); });
+  auto messagebox = MsgBoxFactory::create(components, Json::GAME_OVER,
+                                          {std::move(exit_pair)});
+
+  components.gui.add(messagebox);
+  messagebox->setEscapeKey(false);
+  active_messagebox = messagebox;
+  // PositionWidgetMenager::setMiddle(components.window, messagebox);
+}
+
 void MainGame::remove() {
-  // active_messagebox.destroy();
   player.removeEachItem();
-  panel.remove();
+  heart_panel.remove();
+  bomb_panel.remove();
+
   box_menager.remove();
   own_signal.emit(&customwidget);
+  if (!active_messagebox->expired()) {
+    components.gui.remove(active_messagebox->lock()); // chyba
+  }
 }
 
 const bool MainGame::isInitialized() const {
@@ -41,16 +68,17 @@ const Player &MainGame::getPlayer() const { return player; }
 
 void MainGame::movePlayerIfValidNewPosition(Player::Movement movement) {
   auto potential_new_position = player.getPredictedNewPosition(movement);
-  if (box_menager.isEntirePositionFree(potential_new_position,
-                                       player.getImage()->getSize())) {
+  auto is_from_fire_free = box_menager.isFromFirePositionFree(
+      potential_new_position, player.getImage()->getSize());
+  if (box_menager.isPositionFree(potential_new_position,
+                                 player.getImage()->getSize()) &&
+      (is_from_fire_free || player.isGhost())) {
     player.move(movement);
+    if (player.isGhost() && is_from_fire_free) {
+      player.setGhost(false);
+    }
   }
 }
-
-// void MainGame::connectBombsSignal(tgui::Signal &signal) {
-//   signal.connect(
-//       [this](auto index) { return box_menager.areIndexesFree(index); });
-// }
 
 void MainGame::movePlayer() {
   if (isRunning()) {
@@ -88,27 +116,36 @@ void MainGame::movePlayer() {
 void MainGame::doPlayerActivities() {
   if (isRunning()) {
     if (components.isReleased(sf::Keyboard::Space)) {
-      player.putBomb();
+      player.putBomb(bomb_panel.getCurrentType());
+      bomb_panel.switchOnNextElement();
     }
     if (components.isClicked(sf::Keyboard::LControl)) {
-      player.setNextBombOption();
-      panel.setBomb(player.getCurrentBomb());
+      // player.setNextBombOption();
+      bomb_panel.changeCurrentElement();
     }
     if (components.isClicked(sf::Keyboard::Q)) {
       // player.setNextBombOption();
-      panel.addHeart();
+      heart_panel.addHeart();
+      heart_panel.switchOnNextElement();
     }
     if (components.isClicked(sf::Keyboard::W)) {
       // player.setNextBombOption();
-      panel.removeHeart();
+      heart_panel.switchOnPreviousElement();
     }
     // player.checkBombsExpired();
   }
 }
 
 void MainGame::checkBombs() {
+  auto bomb_size = player.getUsedBombs();
   player.checkBombsExpired(isRunning());
+  auto new_bombs = bomb_size - player.getUsedBombs();
+  while (new_bombs-- > 0) {
+    bomb_panel.switchOnPreviousElement();
+    // new_bombs--;
+  }
   box_menager.checkFiresExpired(isRunning());
+  box_menager.checkBoxesExpired(isRunning());
 }
 
 void MainGame::checkPause() {
@@ -150,7 +187,7 @@ void MainGame::createExitMessageBox() {
 
   components.gui.add(messagebox);
   active_messagebox = messagebox;
-  PositionWidgetMenager::setMiddle(components.window, messagebox);
+  // PositionWidgetMenager::setMiddle(components.window, messagebox);
 }
 
 void MainGame::createPauseMessageBox() {
