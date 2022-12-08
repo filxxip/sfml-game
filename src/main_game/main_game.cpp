@@ -15,7 +15,7 @@ MainGame::MainGame(MainGameComponents &components_)
   // player.addHeartSignal.connect([this]() { panel.addHeart(); });
   player.removeHeartSignal.connect([this]() {
     heart_panel.switchOnNextElement();
-    if (heart_panel.getActiveElementNumber() <= 0) {
+    if (!heart_panel.isAnyElementOn()) {
       gameOver();
     }
   });
@@ -115,22 +115,24 @@ void MainGame::movePlayer() {
 
 void MainGame::doPlayerActivities() {
   if (isRunning()) {
-    if (components.isReleased(sf::Keyboard::Space)) {
+    if (components.isReleased(sf::Keyboard::Space) &&
+        bomb_panel.isAnyElementOn()) {
       player.putBomb(bomb_panel.getCurrentType());
       bomb_panel.switchOnNextElement();
     }
     if (components.isClicked(sf::Keyboard::LControl)) {
       // player.setNextBombOption();
-      bomb_panel.changeCurrentElement();
+      // bomb_panel.changeCurrentElement();
+      bomb_panel.changeEveryElement();
     }
     if (components.isClicked(sf::Keyboard::Q)) {
       // player.setNextBombOption();
-      heart_panel.addHeart();
-      heart_panel.switchOnNextElement();
+      bomb_panel.addNewElement();
+      // heart_panel.switchOnNextElement();
     }
     if (components.isClicked(sf::Keyboard::W)) {
       // player.setNextBombOption();
-      heart_panel.switchOnPreviousElement();
+      bomb_panel.removeElement();
     }
     // player.checkBombsExpired();
   }
@@ -142,6 +144,7 @@ void MainGame::checkBombs() {
   auto new_bombs = bomb_size - player.getUsedBombs();
   while (new_bombs-- > 0) {
     bomb_panel.switchOnPreviousElement();
+    // bomb_panel.updateCurrentElement();
     // new_bombs--;
   }
   box_menager.checkFiresExpired(isRunning());

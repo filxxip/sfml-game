@@ -23,9 +23,9 @@ public:
 
   virtual void setOn() = 0;
   virtual void setOff() = 0;
+  virtual void changeStyle() = 0;
 
 protected:
-  virtual void changeStyle() = 0;
   T current_type;
 
   bool status = true;
@@ -41,8 +41,6 @@ public:
 
   PanelElementsTypes::HeartType convertIndexToType(int index) const;
 
-  // decltype(auto) getFirstOnElement();
-
   static Ptr create(const sf::RenderWindow &window, const std::string &path);
   void setOn();
   void setOff();
@@ -54,10 +52,10 @@ private:
 class BombElement : public PanelElement<Bomb::BombType> {
 public:
   using Ptr = std::shared_ptr<BombElement>;
-  BombElement(const sf::RenderWindow &window, const std::string &path);
+  BombElement(const sf::RenderWindow &window, Bomb::BombType type);
   int convertTypeToIndex() const;
   Bomb::BombType convertIndexToType(int index) const;
-  static Ptr create(const sf::RenderWindow &window, const std::string &path);
+  static Ptr create(const sf::RenderWindow &window, Bomb::BombType type);
 
   void setOn();
   void setOff();

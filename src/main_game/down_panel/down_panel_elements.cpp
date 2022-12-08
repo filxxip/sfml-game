@@ -16,7 +16,9 @@ template class PanelElement<Bomb::BombType>;
 
 template <typename T> void PanelElement<T>::changeType() {
   current_type = convertIndexToType(convertTypeToIndex() + 1);
-  changeStyle();
+  if (isOn()) {
+    changeStyle();
+  }
 }
 template <typename T>
 PanelElement<T>::PanelElement(const sf::RenderWindow &window,
@@ -70,10 +72,9 @@ void HeartElement::changeStyle() {
       : setPicture(Paths::RED_HEART_PATH);
 }
 
-BombElement::BombElement(const sf::RenderWindow &window,
-                         const std::string &path)
-    : PanelElement(window, path) {
-  current_type = Bomb::BombType::TIME;
+BombElement::BombElement(const sf::RenderWindow &window, Bomb::BombType type)
+    : PanelElement(window, Bomb::bomb_names.at(type)) {
+  current_type = type;
 }
 
 int BombElement::convertTypeToIndex() const {
@@ -90,8 +91,8 @@ Bomb::BombType BombElement::convertIndexToType(int index) const {
                                          : Bomb::bomb_names.begin()->first;
 }
 BombElement::Ptr BombElement::create(const sf::RenderWindow &window,
-                                     const std::string &path) {
-  return std::make_shared<BombElement>(window, path);
+                                     Bomb::BombType type) {
+  return std::make_shared<BombElement>(window, type);
 }
 
 void BombElement::setOn() {
