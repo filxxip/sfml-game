@@ -46,7 +46,9 @@ PanelElementsTypes::HeartType
 HeartElement::convertIndexToType(int index) const {
   auto el = std::find_if(index_map.begin(), index_map.end(),
                          [index](auto &pair) { return index == pair.second; });
-  return el != index_map.end() ? el->first : PanelElementsTypes::HeartType::RED;
+  return el != index_map.end()
+             ? el->first
+             : PanelElementsTypes::HeartType::RED; // cos zeby nie po wszytskich
 }
 
 HeartElement::Ptr HeartElement::create(const sf::RenderWindow &window,
@@ -75,20 +77,20 @@ void HeartElement::changeStyle() {
 BombElement::BombElement(const sf::RenderWindow &window, Bomb::BombType type)
     : PanelElement(window, Bomb::bomb_names.at(type)) {
   current_type = type;
+  possible_used_bombs = {Bomb::BombType::TIME};
 }
 
 int BombElement::convertTypeToIndex() const {
   auto index =
-      std::find_if(Bomb::bomb_names.begin(), Bomb::bomb_names.end(),
-                   [this](auto &pair) { return current_type == pair.first; });
-  return std::distance(Bomb::bomb_names.begin(), std::move(index));
+      std::find_if(possible_used_bombs.begin(), possible_used_bombs.end(),
+                   [this](auto &item) { return current_type == item; });
+  return std::distance(possible_used_bombs.begin(), std::move(index));
 }
 
 Bomb::BombType BombElement::convertIndexToType(int index) const {
-  auto el = Bomb::bomb_names.begin();
+  auto el = possible_used_bombs.begin();
   std::advance(el, index);
-  return index < Bomb::bomb_names.size() ? el->first
-                                         : Bomb::bomb_names.begin()->first;
+  return index < possible_used_bombs.size() ? *el : possible_used_bombs.at(0);
 }
 BombElement::Ptr BombElement::create(const sf::RenderWindow &window,
                                      Bomb::BombType type) {

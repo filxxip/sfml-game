@@ -255,3 +255,7 @@ void HeartPanel::addNewElement() { addNewElement(Paths::RED_HEART_PATH); }
 void BombPanel::addNewElement() {
   addNewElement(Bomb::bomb_names.at(getCurrentType()));
 }
+
+// void BombPanel::addNewOption(Bomb::BombType type){
+  
+// }

@@ -42,6 +42,8 @@ private:
   HeartPanel heart_panel;
   BoxMenager box_menager;
 
+  void connectBonusSignals();
+
 public:
   tgui::Signal own_signal;
   tgui::Label customwidget;

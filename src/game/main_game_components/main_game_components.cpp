@@ -3,6 +3,8 @@
 
 MainGameComponents::MainGameComponents(sf::RenderWindow &window_)
     : window(window_), gui(window) {
+      // view.setViewport
+  // view.reset(sf::Vector2f(0, 0), sf::Vector2f(500, 500));
   start();
 }
 

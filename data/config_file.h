@@ -26,6 +26,16 @@ constexpr char MESSAGE_BOX_STYLE[] = "../themes/messagebox.style";
 constexpr char BOX_PATH[] = "../images/box.png";
 constexpr char STONE[] = "../images/stone.png";
 constexpr char FIRE[] = "../images/fire.png";
+
+constexpr char BOMB_BONUS[] = "../images/bombbonus.png";
+constexpr char CLICK_BOMB_BONUS[] = "../images/clickbombbonus.png";
+constexpr char DOUBLE_SPEED_BOMB_BONUS[] = "../images/doublespeedbonus.png";
+constexpr char HEART_BOMB_BONUS[] = "../images/heartbombbonus.png";
+constexpr char HEART_BONUS[] = "../images/heartbonus.png";
+constexpr char MYSTERY_BOMB_BONUS[] = "../images/mysterybombbonus.png";
+constexpr char REMOVE_BONUS[] = "../images/removebonus.png";
+constexpr char SHOE_BONUS[] = "../images/shoebonus.png";
+constexpr char SPEED_BONUS[] = "../images/speedbonus.png";
 } // namespace Paths
 
 namespace RendererNames {

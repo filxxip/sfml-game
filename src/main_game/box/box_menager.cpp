@@ -125,7 +125,8 @@ bool PartMenager<T>::isPositionFree(const tgui::Layout2d &layout,
 }
 
 BoxMenager::BoxMenager(MainGameComponents &components_, Player &player_)
-    : components(components_), player(player_), fire_menager(components_) {}
+    : components(components_), player(player_), fire_menager(components_),
+      bonus_menager(components_) {}
 
 void BoxMenager::inittializeBoxes(int count) {
   double width = components.window.getSize().x;
@@ -187,6 +188,7 @@ void BoxMenager::remove() {
     box.destroy();
   }
   fire_menager.destroy();
+  bonus_menager.destroy();
   menager_vector.clear();
 }
 void BoxMenager::addItem(Index &&index, LiveItem::Ptr &&item) {
@@ -222,6 +224,11 @@ void BoxMenager::initialize() {
   inittializeBoxes(5);
   createBoard();
   createEdges();
+  createBonus(2, {BonusItem::Type::CLICK_BOMB, BonusItem::Type::HEART_BOMB,
+                  BonusItem::Type::MYSTERY_BOMB, BonusItem::Type::NEW_BOMB,
+                  BonusItem::Type::NEW_HEART, BonusItem::Type::PLUS_POWER,
+                  BonusItem::Type::PLUS_SPEED, BonusItem::Type::PLUS_TWO_POWER,
+                  BonusItem::Type::REMOVE_RANDOM_OPP});
 }
 
 bool BoxMenager::isPositionFree(const tgui::Layout2d &layout,
@@ -242,6 +249,12 @@ bool BoxMenager::isFromFirePositionFree(const tgui::Layout2d &layout,
                                         const tgui::Layout2d &size) const {
   return fire_menager.isPositionFree(layout, size);
 }
+
+bool BoxMenager::isFromBonusPositionFree(const tgui::Layout2d &layout,
+                                         const tgui::Layout2d &size) const {
+  return bonus_menager.isPositionFree(layout, size);
+}
+
 bool BoxMenager::isEntirePositionFree(const tgui::Layout2d &layout,
                                       const tgui::Layout2d &size) const {
   return isPositionFree(layout, size) && isFromFirePositionFree(layout, size);
@@ -252,10 +265,13 @@ bool BoxMenager::areIndexesFree(const Index &indexes) const {
 }
 
 void BoxMenager::backendFireCreator(Index &&init_index, bool &condition,
-                                    std::vector<Index> &checked_vectors) {
+                                    std::vector<Index> &checked_vectors,
+                                    bool affect_on_player) {
   if (condition) {
     if (areIndexesFree(init_index)) {
-      checkPlayerOnFire(init_index);
+      if (affect_on_player) {
+        checkPlayerOnFire(init_index);
+      }
       addFire(std::move(init_index));
     } else {
       for (auto &box : menager_vector) {
@@ -273,27 +289,30 @@ void BoxMenager::backendFireCreator(Index &&init_index, bool &condition,
 }
 
 void BoxMenager::checkPlayerOnFire(const Index &index) {
-  if (player.getImage()->getIndexPosition() == index) {
+  if (player.getImage()->getIndexPosition() == index && true) {
     player.emitRemoveHeartSignal();
     player.setGhost(true);
   }
 }
 
-void BoxMenager::createWholeFire(Index &&init_index, int bomb_power) {
+void BoxMenager::createWholeFire(Index &&init_index, int bomb_power,
+                                 bool affect_on_player) {
   std::vector<Index> ill_indexes;
   bool is_right_path_free = true;
   bool is_left_path_free = true;
   bool is_up_path_free = true;
   bool is_down_path_free = true;
-  backendFireCreator(init_index + Index(0, 0), is_down_path_free, ill_indexes);
+  backendFireCreator(init_index + Index(0, 0), is_down_path_free, ill_indexes,
+                     affect_on_player);
   for (int i = 1; i < bomb_power; i++) {
-    backendFireCreator(init_index + Index(0, i), is_down_path_free,
-                       ill_indexes);
+    backendFireCreator(init_index + Index(0, i), is_down_path_free, ill_indexes,
+                       affect_on_player);
     backendFireCreator(init_index + Index(i, 0), is_right_path_free,
-                       ill_indexes);
+                       ill_indexes, affect_on_player);
     backendFireCreator(init_index + Index(-i, 0), is_left_path_free,
-                       ill_indexes);
-    backendFireCreator(init_index + Index(0, -i), is_up_path_free, ill_indexes);
+                       ill_indexes, affect_on_player);
+    backendFireCreator(init_index + Index(0, -i), is_up_path_free, ill_indexes,
+                       affect_on_player);
   }
 
   checkFiresExpired(true);
@@ -315,4 +334,44 @@ void BoxMenager::checkBoxesExpired(bool game_is_running) {
   for (auto &box : menager_vector) {
     box.checkAndRemoveExpiredItems(game_is_running);
   }
+}
+
+void BoxMenager::createBonus(
+    int each_element_number,
+    std::vector<BonusItem::Type> &&active_bonus_types) {
+  int maximum_x = BoxData::ScaleMenager::getMaxXIndex();
+  int maximum_y = BoxData::ScaleMenager::getMaxYIndex();
+  srand((unsigned)time(NULL));
+  for (auto item_type : active_bonus_types) {
+    int i = 0;
+    while (i < each_element_number) {
+
+      auto bonus_item = BonusItem::create(components, item_type);
+      auto x = rand() % maximum_x + 1;
+      auto y = rand() % maximum_y + 1;
+      auto index = Index(x, y);
+      if (isFromBonusPositionFree(index.convertToInitPosition(),
+                                  bonus_item->getSize())) {
+        bonus_item->setIndexPosition(std::move(index));
+        components.gui.add(bonus_item);
+        bonus_item->moveToBack();
+        bonus_menager.addItem(bonus_item);
+        bonus_item->setIndexPosition(std::move(index));
+        i++;
+      }
+    }
+  }
+}
+
+void BoxMenager::connectBonusSignals() {
+  bonus_menager.connectSignals(BonusItem::Type::PLUS_POWER, [this]() {
+    player.changeBombPower(player.getBombPower() + 1);
+  });
+  bonus_menager.connectSignals(BonusItem::Type::PLUS_TWO_POWER, [this]() {
+    player.changeBombPower(player.getBombPower() + 2);
+  });
+  bonus_menager.connectSignals(BonusItem::Type::PLUS_SPEED, [this]() {
+    player.changeSpeedRate(player.getSpeedRate() + 3);
+  });
+  // bonus_menager.connectSignals(BonusItem::Type::)
 }

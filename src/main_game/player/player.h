@@ -10,6 +10,7 @@
 struct SignalHelper {
   Index index;
   int current_bomb_power;
+  bool affect_on_player = true;
   SignalHelper() : index(EmptyIndex()) {}
 };
 
@@ -49,6 +50,16 @@ public:
   int getMaxBombx() const { return maximum_bombs; }
   int getUsedBombs() const { return bombs.size(); }
 
+  int getBombPower() const { return bomb_power; }
+  void changeBombPower(int new_value) {
+    bomb_power = new_value;
+    for (auto &bomb : bombs) {
+      bomb->changePower(new_value);
+    }
+  }
+  void changeSpeedRate(int new_value){speed_rate = new_value;}
+  int getSpeedRate()const{return speed_rate;}
+
 private:
   int free_bombs;
   int maximum_bombs;
@@ -56,6 +67,7 @@ private:
   bool isYValid(double new_y) const;
   bool isXValid(double new_x) const;
   int speed_rate = 5;
+  int bomb_power = 5;
   Bomb::BombType bomb_selector = Bomb::BombType::TIME;
   std::vector<Bomb::BombType> bomb_options{
       Bomb::BombType::TIME, Bomb::BombType::CLICK, Bomb::BombType::HEART,

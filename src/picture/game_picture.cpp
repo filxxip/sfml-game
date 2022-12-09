@@ -39,3 +39,24 @@ void GamePicture::setIndexPosition(Index &&index) {
 Index GamePicture::getIndexPosition() {
   return Index::getIndexFromPosition(getSize(), getPosition());
 }
+
+const std::unordered_map<BonusItem::Type, std::string> BonusItem::types_paths{
+    {BonusItem::Type::CLICK_BOMB, Paths::CLICK_BOMB_BONUS},
+    {BonusItem::Type::HEART_BOMB, Paths::HEART_BOMB_BONUS},
+    {BonusItem::Type::MYSTERY_BOMB, Paths::MYSTERY_BOMB_BONUS},
+    {BonusItem::Type::NEW_BOMB, Paths::BOMB_BONUS},
+    {BonusItem::Type::NEW_HEART, Paths::HEART_BONUS},
+    {BonusItem::Type::PLUS_POWER, Paths::SPEED_BONUS},
+    {BonusItem::Type::PLUS_TWO_POWER, Paths::DOUBLE_SPEED_BOMB_BONUS},
+    {BonusItem::Type::REMOVE_RANDOM_OPP, Paths::REMOVE_BONUS},
+    {BonusItem::Type::PLUS_SPEED, Paths::SHOE_BONUS}};
+
+BonusItem::BonusItem(MainGameComponents &components_, Type type_)
+    : GamePicture(components_, BonusItem::types_paths.at(type_)), type(type_), own_signal("my_custom_signal"){
+  setSize({BoxData::ScaleMenager::getBoxSize(),
+           BoxData::ScaleMenager::getBoxSize()});
+}
+
+BonusItem::Ptr create(MainGameComponents &components_, BonusItem::Type type_) {
+  return std::make_shared<BonusItem>(components_, type_);
+}

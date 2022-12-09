@@ -12,6 +12,7 @@ public:
     return std::make_unique<StandardTimeBomb>(components);
   }
   void checkSnapShot() override;
+  bool affectOnPlayer()const override{return true;}
 
 protected:
   int life_span;

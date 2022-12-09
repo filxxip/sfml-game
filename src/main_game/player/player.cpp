@@ -91,6 +91,7 @@ void Player::putBomb(Bomb::BombType type) {
     return;
   }
   }
+  bomb->changePower(bomb_power);
   bomb->putUnder(picture);
   bombs.push_back(std::move(bomb));
 }
@@ -115,6 +116,7 @@ void Player::checkBombsExpired(bool game_is_running) {
 
       signal_helper.index = Index::getIndexFromPosition(bomb->getPicture());
       signal_helper.current_bomb_power = bomb->getPower();
+      signal_helper.affect_on_player = bomb->affectOnPlayer();
       own_signal.emit(&customwidget);
     }
   }

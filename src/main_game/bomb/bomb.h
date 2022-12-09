@@ -35,5 +35,8 @@ public:
   void destroyFromGUI();
   // void create_fire(Index &&index);
   virtual void checkSnapShot() = 0;
+  virtual bool affectOnPlayer()const = 0;
   int getPower() const { return power; }
+
+  void changePower(int new_value){power = new_value;}
 };

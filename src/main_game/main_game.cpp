@@ -10,7 +10,8 @@ MainGame::MainGame(MainGameComponents &components_)
       box_menager(components, player) {
   player.own_signal.connect([this]() {
     box_menager.createWholeFire(std::move(player.signal_helper.index),
-                                player.signal_helper.current_bomb_power);
+                                player.signal_helper.current_bomb_power,
+                                player.signal_helper.affect_on_player);
   });
   // player.addHeartSignal.connect([this]() { panel.addHeart(); });
   player.removeHeartSignal.connect([this]() {
@@ -144,8 +145,6 @@ void MainGame::checkBombs() {
   auto new_bombs = bomb_size - player.getUsedBombs();
   while (new_bombs-- > 0) {
     bomb_panel.switchOnPreviousElement();
-    // bomb_panel.updateCurrentElement();
-    // new_bombs--;
   }
   box_menager.checkFiresExpired(isRunning());
   box_menager.checkBoxesExpired(isRunning());
@@ -203,4 +202,16 @@ void MainGame::createPauseMessageBox() {
   components.gui.add(messagebox);
   active_messagebox = messagebox;
   PositionWidgetMenager::setMiddle(components.window, messagebox);
+}
+
+void MainGame::connectBonusSignals() {
+  box_menager.connectBonusSignals(BonusItem::Type::HEART_BOMB, [this]() {
+    bomb_panel.addNewOption(Bomb::BombType::HEART);
+  });
+  box_menager.connectBonusSignals(BonusItem::Type::HEART_BOMB, [this]() {
+    bomb_panel.addNewOption(Bomb::BombType::HEART);
+  });
+  box_menager.connectBonusSignals(BonusItem::Type::HEART_BOMB, [this]() {
+    bomb_panel.addNewOption(Bomb::BombType::HEART);
+  });
 }

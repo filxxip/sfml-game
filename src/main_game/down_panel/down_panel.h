@@ -66,6 +66,11 @@ public:
 
   void initialize();
   void addNewElement();
+  void addNewOption(Bomb::BombType type){
+    // for (auto & bomb:elements){
+    //   bomb-//cos tutaj zrobic 
+    // }
+  }
 };
 
 class HeartPanel : public ElementPanel<PanelElementsTypes::HeartType> {

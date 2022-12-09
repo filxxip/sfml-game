@@ -50,6 +50,7 @@ private:
 };
 
 class BombElement : public PanelElement<Bomb::BombType> {
+
 public:
   using Ptr = std::shared_ptr<BombElement>;
   BombElement(const sf::RenderWindow &window, Bomb::BombType type);
@@ -60,6 +61,11 @@ public:
   void setOn();
   void setOff();
 
+  void addOption(Bomb::BombType option){
+    possible_used_bombs.push_back(option);
+  }
+
 private:
+  std::vector<Bomb::BombType> possible_used_bombs;
   void changeStyle();
 };

@@ -12,4 +12,5 @@ public:
   bool isExpired() override;
   void checkSnapShot() override;
   // bool shouldBeRemoved(bool game_is_running) override;
+    bool affectOnPlayer()const override{return true;}
 };
