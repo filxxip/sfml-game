@@ -1,6 +1,7 @@
 #pragma once
 
 #include <TGUI/Vector2.hpp>
+#include <unordered_map>
 
 namespace WindowData {
 constexpr int WIDTH = 800;
@@ -24,6 +25,17 @@ constexpr char MENU_STYLE[] = "../themes/menu.style";
 constexpr char MESSAGE_BOX_STYLE[] = "../themes/messagebox.style";
 constexpr char BOX_PATH[] = "../images/box.png";
 constexpr char STONE[] = "../images/stone.png";
+constexpr char FIRE[] = "../images/fire.png";
+
+constexpr char BOMB_BONUS[] = "../images/bombbonus.png";
+constexpr char CLICK_BOMB_BONUS[] = "../images/clickbombbonus.png";
+constexpr char DOUBLE_SPEED_BOMB_BONUS[] = "../images/doublespeedbonus.png";
+constexpr char HEART_BOMB_BONUS[] = "../images/heartbombbonus.png";
+constexpr char HEART_BONUS[] = "../images/heartbonus.png";
+constexpr char MYSTERY_BOMB_BONUS[] = "../images/mysterybombbonus.png";
+constexpr char REMOVE_BONUS[] = "../images/removebonus.png";
+constexpr char SHOE_BONUS[] = "../images/shoebonus.png";
+constexpr char SPEED_BONUS[] = "../images/speedbonus.png";
 } // namespace Paths
 
 namespace RendererNames {
@@ -41,6 +53,7 @@ constexpr char RESUME[] = "../data/json/resume_messagebox.json";
 constexpr char NEW_GAME[] = "../data/json/new_game_messagebox.json";
 constexpr char EXIT_GAME[] = "../data/json/exit_game_messagebox.json";
 constexpr char EXIT_APP[] = "../data/json/exit_messagebox.json";
+constexpr char GAME_OVER[] = "../data/json/game_over_messagebox.json";
 } // namespace Json
 
 namespace JsonNames {
@@ -71,49 +84,85 @@ constexpr char OPTIONS[] = "Options";
 } // namespace MainMenuData
 
 namespace PanelData {
-constexpr int HEART_X_POSITION = 100;
-constexpr int BOMB_SUP_POS = 150;
-constexpr int HEARTS_SIZE = 30;
-constexpr int HEARTS_MARGIN = 15;
-constexpr int HEARTS_SPACING = 10;
-constexpr int BOMB_SIZE = 50;
+constexpr int DEFAULT_HEART_X_POSITION = 100;
+constexpr int DEFAULT_BOMB_SUP_POS = 150;
+constexpr int DEFAULT_HEARTS_SIZE = 20;
+constexpr int DEFAULT_HEARTS_MARGIN = 12;
+constexpr int DEFAULT_HEARTS_SPACING = 10;
+constexpr int DEFAULT_BOMB_SIZE = 40;
 constexpr int DEFAULT_HEART_NUMBER = 3;
-constexpr int DELTA_PANEL_Y_POSITION = 70;
+constexpr int DELTA_PANEL_Y_POSITION = 55;
+constexpr int DEFAULT_DELTA_PANEL_Y_POSITION_HEIGHT = 70;
 } // namespace PanelData
 
 namespace BoxData {
-constexpr int SIZE = 35;
-constexpr int DEFAULT_BOX_SPACES = 5;
-constexpr int DELTA_PANEL_Y_POSITION = PanelData::DELTA_PANEL_Y_POSITION + 20;
-constexpr int ELEMENTS_X = static_cast<int>((WindowData::WIDTH) / SIZE);
-constexpr int ELEMENTS_Y =
-    static_cast<int>((WindowData::HEIGHT - DELTA_PANEL_Y_POSITION) / SIZE);
-constexpr double BREAK_SPACE_X = (WindowData::WIDTH - ELEMENTS_X * SIZE) /
-                                 static_cast<double>(ELEMENTS_X - 1);
-constexpr double BREAK_SPACE_Y =
-    ((WindowData::HEIGHT - DELTA_PANEL_Y_POSITION) - ELEMENTS_Y * SIZE) /
-    static_cast<double>(ELEMENTS_Y - 1);
-constexpr double INDEX_BOX_WIDTH = SIZE + BREAK_SPACE_X;
-constexpr double INDEX_BOX_HEIGHT = SIZE + BREAK_SPACE_Y;
-constexpr int MAX_X_INDEX = ELEMENTS_X - 2;
-constexpr int MAX_Y_INDEX = ELEMENTS_Y - 2;
-constexpr int MIN_X_INDEX = 1;
-constexpr int MIN_Y_INDEX = 1;
+enum class SizeOptions { MINIMUM, AVERAGE, NORMAL, BIG, MAXIMUM };
+const std::unordered_map<SizeOptions, double> size_index_map{
+    {SizeOptions::MINIMUM, 0.5},
+    {SizeOptions::AVERAGE, 0.7},
+    {SizeOptions::NORMAL, 1},
+    {SizeOptions::BIG, 1.3},
+    {SizeOptions::MAXIMUM, 2}};
+
+constexpr int SIZE = 30;
+constexpr int DEFAULT_ELEMENTS_NUMBER = 300;
+constexpr int DEFAULT_BOX_SPACES = 5; // always const
+
+class ScaleMenager {
+private:
+  static SizeOptions option;
+
+public:
+  enum class PanelElement {
+    HEART_X_POSITION,
+    BOMB_SUP_POS,
+    HEARTS_SIZE,
+    HEARTS_MARGIN,
+    HEARTS_SPACING,
+    BOMB_SIZE,
+    DEFAULT_DELTA_PANEL_Y_POSITION_HEIGHT,
+    DELTA_PANEL_Y_POSITION_HEIGHT
+  };
+
+  static double getBoxSize();
+
+  static int getElementsXNumber();
+  static int getElementsYNumber();
+  static double getBreakSpaceX();
+  static double getBreakSpaceY();
+  static double getIndexBoxWidth();
+  static double getIndexBoxHeight();
+
+  static double getMaxXIndex();
+  static double getMaxYIndex();
+
+  static double getMinXIndex();
+  static double getMinYIndex();
+
+  static double getPlayerSize();
+
+  static void changeOption(SizeOptions option_);
+
+  static int getStonesElementsNumber();
+  static int getBoxesElementsNumber();
+
+  static double getBombSize();
+
+  static double getPanelElementSize(PanelElement element_type);
+
+private:
+  static std::unordered_map<PanelElement, double> default_panel_sizes;
+  static int getElementsNumber();
+};
 
 } // namespace BoxData
 
 namespace BombData {
 constexpr int STANDARD_LIVE_TIME = 3000;
+constexpr int FIRE_ACTIVE_TIME = 1000;
 constexpr int MINIMUM_LIVE_TIME = 1000;
 constexpr int MAXIMUM_RANDOM_LIVE_TIME = 10000;
 constexpr int SNAPSHOTTING_START = 1000;
 constexpr int SNAPSHOTTING_PERIOD = 100;
-constexpr int SIZE = BoxData::SIZE - 10;
+// constexpr int SIZE = BoxData::SIZE - 7;
 } // namespace BombData
-
-namespace PlayerData {
-constexpr int SIZE = BoxData::SIZE - 7;
-// constexpr std::pair<int, int> START_INDEXES = {1, 1};
-// constexpr std::pair<int, int> FREE_START_INDEXES1 = {2, 1};
-// constexpr std::pair<int, int> FREE_START_INDEXES2 = {1, 2};
-} // namespace PlayerData

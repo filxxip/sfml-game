@@ -9,4 +9,5 @@ public:
   static HeartBomb::Ptr create(MainGameComponents &components) {
     return std::make_unique<HeartBomb>(components);
   }
+  bool affectOnPlayer()const override{return false;}
 };

@@ -80,15 +80,9 @@ void CustomMessageBox::checkEnter() {
 }
 
 void CustomMessageBox::checkEscape() {
-  if (components.isClicked(sf::Keyboard::Escape) &&
+  if (message_box_escape_key && components.isClicked(sf::Keyboard::Escape) &&
       components.keyboard.isNotClicked(sf::Keyboard::Escape)) {
-    // components.keyboard.setClicked(sf::Keyboard::Escape);
-    // components.keyboard.clickAndUnclickKey(sf::Keyboard::Escape);
     destroy(); // a moze close
-    // components.keyboard.clickAndUnclickKey(sf::Keyboard::Escape);
-    // std::cout << "i tu" << std::endl;
-    // components.keyboard.setNotClickedAfterDelay(sf::Keyboard::Escape);
-    // }
   }
 }
 

@@ -50,6 +50,7 @@ void Game::update() {
     main_game.checkPause();
     main_game.doPlayerActivities();
   }
+  // com
 }
 void Game::run() {
   while (components.isOpened()) {

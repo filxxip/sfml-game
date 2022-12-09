@@ -17,9 +17,6 @@ public:
   void initialize();
   void remove();
   const bool isInitialized() const;
-
-  //   void setVisible(bool status);
-  //   bool isVisible() const;
   const Player &getPlayer() const;
 
   void movePlayer();
@@ -35,12 +32,17 @@ public:
   void doPlayerActivities();
   void checkBombs();
 
+  void gameOver();
+
 private:
   MainGameComponents &components;
   State state = State::RUNNING;
   Player player;
-  DownPanel panel;
+  BombPanel bomb_panel;
+  HeartPanel heart_panel;
   BoxMenager box_menager;
+
+  void connectBonusSignals();
 
 public:
   tgui::Signal own_signal;

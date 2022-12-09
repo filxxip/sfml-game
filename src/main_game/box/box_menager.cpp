@@ -3,8 +3,10 @@
 
 #include "../../../data/config_file.h"
 
-BoxMenagerPart::BoxMenagerPart(Range &&x_range_, Range &&y_range_)
-    : x_range(x_range_), y_range(y_range_),
+template <typename T>
+PartMenager<T>::PartMenager(MainGameComponents &components_, Range &&x_range_,
+                            Range &&y_range_)
+    : x_range(x_range_), y_range(y_range_), components(components_),
       maximum_elements_x(
           {x_range.getMin() + (x_range.getMax() - x_range.getMin()) / 2,
            x_range.getMin() + (x_range.getMax() - x_range.getMin()) / 2}),
@@ -12,7 +14,18 @@ BoxMenagerPart::BoxMenagerPart(Range &&x_range_, Range &&y_range_)
           {y_range.getMin() + (y_range.getMax() - y_range.getMin()) / 2,
            y_range.getMin() + (y_range.getMax() - y_range.getMin()) / 2}) {}
 
-bool BoxMenagerPart::canBeInSpace(const tgui::Layout2d &layout,
+template <typename T>
+PartMenager<T>::PartMenager(MainGameComponents &components_)
+    : PartMenager(components_, Range(0, components_.window.getSize().x),
+                  Range(0, components_.window.getSize().y)) {}
+
+template <typename T>
+bool PartMenager<T>::containIndex(const Index &index) const {
+  return canBeInSpace(index.convertToInitPosition(), index.getIndexSize());
+}
+
+template <typename T>
+bool PartMenager<T>::canBeInSpace(const tgui::Layout2d &layout,
                                   const tgui::Layout2d &size) const {
   const auto x = layout.x.getValue();
   const auto y = layout.y.getValue();
@@ -27,8 +40,9 @@ bool BoxMenagerPart::canBeInSpace(const tgui::Layout2d &layout,
   return true;
 }
 
-bool BoxMenagerPart::canBeInsideAnyBox(const tgui::Layout2d &layout,
-                                       const tgui::Layout2d &size) const {
+template <typename T>
+bool PartMenager<T>::canBeInsideAnyItem(const tgui::Layout2d &layout,
+                                        const tgui::Layout2d &size) const {
   const auto x = layout.x.getValue();
   const auto y = layout.y.getValue();
   const auto x_max = layout.x.getValue() + size.x.getValue();
@@ -42,9 +56,9 @@ bool BoxMenagerPart::canBeInsideAnyBox(const tgui::Layout2d &layout,
   return true;
 }
 
-void BoxMenagerPart::addBox(Box::Ptr box) {
-  auto position = box->getPicture()->getPosition();
-  auto size = box->getPicture()->getSize();
+template <typename T> void PartMenager<T>::addItem(T item) {
+  auto position = item->getPosition();
+  auto size = item->getSize();
   auto maximum_x = position.x + size.x;
   auto maximum_y = position.y + size.y;
   if (maximum_elements_x.getMin() > position.x) {
@@ -59,11 +73,12 @@ void BoxMenagerPart::addBox(Box::Ptr box) {
   if (maximum_elements_y.getMax() < maximum_y) {
     maximum_elements_y.setMax(maximum_y);
   }
-  box_vector.push_back(box);
+  box_vector.push_back(item);
 }
 
-bool BoxMenagerPart::isWidgetInsideAnyBox(const tgui::Layout2d &layout,
-                                          const tgui::Layout2d &size) const {
+template <typename T>
+bool PartMenager<T>::isWidgetInsideAnyItem(const tgui::Layout2d &layout,
+                                           const tgui::Layout2d &size) const {
   auto index = std::find_if(box_vector.begin(), box_vector.end(),
                             [&layout, &size](auto &box) {
                               return box->isWidgetInside(layout, size);
@@ -71,21 +86,54 @@ bool BoxMenagerPart::isWidgetInsideAnyBox(const tgui::Layout2d &layout,
   return index != box_vector.end();
 }
 
-void BoxMenagerPart::destroy(MainGameComponents &components_) {
+template <typename T> void PartMenager<T>::destroy() {
 
-  for (auto &box : box_vector) {
-    components_.gui.remove(box->getPicture());
+  for (auto &item : box_vector) {
+    components.gui.remove(item);
   }
   box_vector.clear();
 }
 
-BoxMenager::BoxMenager(MainGameComponents &components_, const Player &player_)
-    : components(components_), player(player_) {}
+template <typename T>
+void PartMenager<T>::removeEveryExpiredItem(bool game_is_running) {
+  auto index = std::remove_if(box_vector.begin(), box_vector.end(),
+                              [game_is_running](auto &fire) {
+                                return fire->isExpired(game_is_running);
+                              });
+  box_vector.erase(index, box_vector.end());
+}
+
+template <typename T> void PartMenager<T>::checkExpired(bool game_is_running) {
+  for (auto &fire : box_vector) {
+    if (fire->isExpired(game_is_running)) {
+      components.gui.remove(fire);
+    }
+  }
+}
+
+template <typename T>
+void PartMenager<T>::checkAndRemoveExpiredItems(bool game_is_running) {
+  checkExpired(game_is_running);
+  removeEveryExpiredItem(game_is_running);
+}
+
+template <typename T>
+bool PartMenager<T>::isPositionFree(const tgui::Layout2d &layout,
+                                    const tgui::Layout2d &size) const {
+  return !(canBeInsideAnyItem(layout, size) &&
+           isWidgetInsideAnyItem(layout, size));
+}
+
+BoxMenager::BoxMenager(MainGameComponents &components_, Player &player_)
+    : components(components_), player(player_), fire_menager(components_),
+      bonus_menager(components_) {}
 
 void BoxMenager::inittializeBoxes(int count) {
   double width = components.window.getSize().x;
-  double height =
-      components.window.getSize().y - PanelData::DELTA_PANEL_Y_POSITION;
+  double height = components.window.getSize().y -
+                  BoxData::ScaleMenager::getPanelElementSize(
+                      BoxData::ScaleMenager::PanelElement::
+                          DEFAULT_DELTA_PANEL_Y_POSITION_HEIGHT);
   width = width / count;
   height = height / count;
   double init_height = 0;
@@ -94,8 +142,9 @@ void BoxMenager::inittializeBoxes(int count) {
     double init_width = 0;
     double end_width = width;
     for (int j = 0; j < count; j++) {
-      menager_vector.push_back(
-          BoxMenagerPart({init_width, end_width}, {init_height, end_height}));
+      auto item = BoxesPartMenager(components, {init_width, end_width},
+                                   {init_height, end_height});
+      menager_vector.push_back(std::move(item));
       init_width += width;
       end_width += width;
     }
@@ -106,23 +155,27 @@ void BoxMenager::inittializeBoxes(int count) {
 
 void BoxMenager::createBoard() {
   std::vector<Index> possible_indexes;
-  possible_indexes.reserve(BoxData::MAX_X_INDEX * BoxData::MAX_Y_INDEX);
 
-  for (int i = BoxData::MIN_X_INDEX; i <= BoxData::MAX_X_INDEX; i++) {
-    for (int j = BoxData::MIN_Y_INDEX; j <= BoxData::MAX_Y_INDEX; j++) {
+  possible_indexes.reserve(BoxData::ScaleMenager::getMaxXIndex() *
+                           BoxData::ScaleMenager::getMaxYIndex());
+
+  for (int i = BoxData::ScaleMenager::getMinXIndex();
+       i <= BoxData::ScaleMenager::getMaxXIndex(); i++) {
+    for (int j = BoxData::ScaleMenager::getMinYIndex();
+         j <= BoxData::ScaleMenager::getMaxYIndex(); j++) {
       if (!(i == 1 && j == 1) && !(i == 2 && j == 1) && !(i == 1 && j == 2)) {
         possible_indexes.emplace_back(i, j);
       }
     }
   }
   srand((unsigned)time(NULL));
-  for (int i = 0; i < 170; i++) {
+  for (int i = 0; i < BoxData::ScaleMenager::getBoxesElementsNumber(); i++) {
     int randomx = rand() % possible_indexes.size();
     auto itr = possible_indexes.begin() + randomx;
     addBox(std::move(possible_indexes.at(randomx)));
     possible_indexes.erase(itr);
   }
-  for (int i = 0; i < 50; i++) {
+  for (int i = 0; i < BoxData::ScaleMenager::getStonesElementsNumber(); i++) {
     int randomx = rand() % possible_indexes.size();
     auto itr = possible_indexes.begin() + randomx;
     addStone(std::move(possible_indexes.at(randomx)));
@@ -132,64 +185,193 @@ void BoxMenager::createBoard() {
 
 void BoxMenager::remove() {
   for (auto &box : menager_vector) {
-    box.destroy(components);
+    box.destroy();
   }
+  fire_menager.destroy();
+  bonus_menager.destroy();
   menager_vector.clear();
 }
-
-void BoxMenager::addBox(Index &&index, BoxFactory::Types type) {
+void BoxMenager::addItem(Index &&index, LiveItem::Ptr &&item) {
   auto pos = index.convertToPosition();
   if (isPositionFree(pos)) {
-    auto box = BoxFactory::create(components, type);
-    box->put(pos.x.getValue(), pos.y.getValue());
+    item->setIndexPosition(std::move(index));
+    components.gui.add(item);
     for (auto &menager_box : menager_vector) {
-      if (menager_box.canBeInSpace(pos, box->getPicture()->getSize())) {
-        menager_box.addBox(box);
+      if (menager_box.canBeInSpace(pos, item->getSize())) {
+        menager_box.addItem(item);
       }
     }
   }
 }
-
 void BoxMenager::addStone(Index &&indexes) {
-  addBox(std::move(indexes), BoxFactory::Types::STONE);
+  addItem(std::move(indexes), Stone::create(components));
 }
-
 void BoxMenager::addBox(Index &&indexes) {
-  addBox(std::move(indexes), BoxFactory::Types::BOX);
+  addItem(std::move(indexes), Box::create(components));
 }
 
 void BoxMenager::createEdges() {
-  for (int i = 0; i <= BoxData::ELEMENTS_X - 1; i++) {
+  for (int i = 0; i <= BoxData::ScaleMenager::getMaxXIndex() + 1; i++) {
     addStone({i, 0});
-    addStone({i, BoxData::ELEMENTS_Y - 1});
+    addStone({i, BoxData::ScaleMenager::getElementsYNumber() - 1});
   }
-  for (int i = 1; i <= BoxData::ELEMENTS_Y - 1 - 1; i++) {
+  for (int i = 1; i <= BoxData::ScaleMenager::getMaxYIndex() + 1; i++) {
     addStone({0, i});
-    addStone({BoxData::ELEMENTS_X - 1, i});
+    addStone({BoxData::ScaleMenager::getElementsXNumber() - 1, i});
   }
 }
-
 void BoxMenager::initialize() {
-  inittializeBoxes(15);
+  inittializeBoxes(5);
   createBoard();
   createEdges();
+  createBonus(2, {BonusItem::Type::CLICK_BOMB, BonusItem::Type::HEART_BOMB,
+                  BonusItem::Type::MYSTERY_BOMB, BonusItem::Type::NEW_BOMB,
+                  BonusItem::Type::NEW_HEART, BonusItem::Type::PLUS_POWER,
+                  BonusItem::Type::PLUS_SPEED, BonusItem::Type::PLUS_TWO_POWER,
+                  BonusItem::Type::REMOVE_RANDOM_OPP});
 }
 
 bool BoxMenager::isPositionFree(const tgui::Layout2d &layout,
                                 const tgui::Layout2d &size) const {
   for (auto &menager_box : menager_vector) {
-    if (menager_box.canBeInsideAnyBox(layout, size)) {
-      if (menager_box.isWidgetInsideAnyBox(layout, size)) {
-        return false;
-      }
+    if (!menager_box.isPositionFree(layout, size)) {
+      return false;
     }
   }
   return true;
 }
 bool BoxMenager::isPositionFree(const tgui::Layout2d &layout) const {
-  return isPositionFree(layout, {BoxData::SIZE, BoxData::SIZE});
+  return isPositionFree(layout, {BoxData::ScaleMenager::getBoxSize(),
+                                 BoxData::ScaleMenager::getBoxSize()});
 }
 
-bool BoxMenager::areIndexesFree(Index &&indexes) const {
-  return indexes.isValid() && isPositionFree(indexes.convertToPosition());
+bool BoxMenager::isFromFirePositionFree(const tgui::Layout2d &layout,
+                                        const tgui::Layout2d &size) const {
+  return fire_menager.isPositionFree(layout, size);
+}
+
+bool BoxMenager::isFromBonusPositionFree(const tgui::Layout2d &layout,
+                                         const tgui::Layout2d &size) const {
+  return bonus_menager.isPositionFree(layout, size);
+}
+
+bool BoxMenager::isEntirePositionFree(const tgui::Layout2d &layout,
+                                      const tgui::Layout2d &size) const {
+  return isPositionFree(layout, size) && isFromFirePositionFree(layout, size);
+}
+
+bool BoxMenager::areIndexesFree(const Index &indexes) const {
+  return isPositionFree(indexes.convertToPosition());
+}
+
+void BoxMenager::backendFireCreator(Index &&init_index, bool &condition,
+                                    std::vector<Index> &checked_vectors,
+                                    bool affect_on_player) {
+  if (condition) {
+    if (areIndexesFree(init_index)) {
+      if (affect_on_player) {
+        checkPlayerOnFire(init_index);
+      }
+      addFire(std::move(init_index));
+    } else {
+      for (auto &box : menager_vector) {
+        if (std::find(checked_vectors.begin(), checked_vectors.end(),
+                      init_index) == checked_vectors.end()) {
+          if (box.containIndex(init_index)) {
+            box.deacreaseIndexItemLive(init_index);
+            checked_vectors.push_back(std::move(init_index));
+          }
+        }
+      }
+      condition = false;
+    }
+  }
+}
+
+void BoxMenager::checkPlayerOnFire(const Index &index) {
+  if (player.getImage()->getIndexPosition() == index && true) {
+    player.emitRemoveHeartSignal();
+    player.setGhost(true);
+  }
+}
+
+void BoxMenager::createWholeFire(Index &&init_index, int bomb_power,
+                                 bool affect_on_player) {
+  std::vector<Index> ill_indexes;
+  bool is_right_path_free = true;
+  bool is_left_path_free = true;
+  bool is_up_path_free = true;
+  bool is_down_path_free = true;
+  backendFireCreator(init_index + Index(0, 0), is_down_path_free, ill_indexes,
+                     affect_on_player);
+  for (int i = 1; i < bomb_power; i++) {
+    backendFireCreator(init_index + Index(0, i), is_down_path_free, ill_indexes,
+                       affect_on_player);
+    backendFireCreator(init_index + Index(i, 0), is_right_path_free,
+                       ill_indexes, affect_on_player);
+    backendFireCreator(init_index + Index(-i, 0), is_left_path_free,
+                       ill_indexes, affect_on_player);
+    backendFireCreator(init_index + Index(0, -i), is_up_path_free, ill_indexes,
+                       affect_on_player);
+  }
+
+  checkFiresExpired(true);
+  checkBoxesExpired(true);
+}
+
+void BoxMenager::addFire(Index &&index) {
+  auto fire = Fire::create(components);
+  fire->setIndexPosition(std::move(index));
+  components.gui.add(fire);
+  fire_menager.addItem(std::move(fire));
+}
+
+void BoxMenager::checkFiresExpired(bool game_is_running) {
+  fire_menager.checkAndRemoveExpiredItems(game_is_running);
+}
+
+void BoxMenager::checkBoxesExpired(bool game_is_running) {
+  for (auto &box : menager_vector) {
+    box.checkAndRemoveExpiredItems(game_is_running);
+  }
+}
+
+void BoxMenager::createBonus(
+    int each_element_number,
+    std::vector<BonusItem::Type> &&active_bonus_types) {
+  int maximum_x = BoxData::ScaleMenager::getMaxXIndex();
+  int maximum_y = BoxData::ScaleMenager::getMaxYIndex();
+  srand((unsigned)time(NULL));
+  for (auto item_type : active_bonus_types) {
+    int i = 0;
+    while (i < each_element_number) {
+
+      auto bonus_item = BonusItem::create(components, item_type);
+      auto x = rand() % maximum_x + 1;
+      auto y = rand() % maximum_y + 1;
+      auto index = Index(x, y);
+      if (isFromBonusPositionFree(index.convertToInitPosition(),
+                                  bonus_item->getSize())) {
+        bonus_item->setIndexPosition(std::move(index));
+        components.gui.add(bonus_item);
+        bonus_item->moveToBack();
+        bonus_menager.addItem(bonus_item);
+        bonus_item->setIndexPosition(std::move(index));
+        i++;
+      }
+    }
+  }
+}
+
+void BoxMenager::connectBonusSignals() {
+  bonus_menager.connectSignals(BonusItem::Type::PLUS_POWER, [this]() {
+    player.changeBombPower(player.getBombPower() + 1);
+  });
+  bonus_menager.connectSignals(BonusItem::Type::PLUS_TWO_POWER, [this]() {
+    player.changeBombPower(player.getBombPower() + 2);
+  });
+  bonus_menager.connectSignals(BonusItem::Type::PLUS_SPEED, [this]() {
+    player.changeSpeedRate(player.getSpeedRate() + 3);
+  });
+  // bonus_menager.connectSignals(BonusItem::Type::)
 }

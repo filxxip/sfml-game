@@ -13,9 +13,6 @@ public:
 
   static Ptr create(const sf::RenderWindow &window_, const std::string &path);
 
-  // const RatioWidgetData &getRatioData() const;
-  // void setRatioData();
-
-private:
-  // RatioWidgetData ratio_data;
+  tgui::Layout2d getMiddlePosition() const;
+  void setMiddlePosition(CustomPicture::Ptr widget);
 };

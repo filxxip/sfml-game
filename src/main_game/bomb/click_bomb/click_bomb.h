@@ -9,5 +9,8 @@ public:
   static ClickBomb::Ptr create(MainGameComponents &components) {
     return std::make_unique<ClickBomb>(components);
   }
-  bool isExpired(bool game_is_running);
+  bool isExpired() override;
+  void checkSnapShot() override;
+  // bool shouldBeRemoved(bool game_is_running) override;
+    bool affectOnPlayer()const override{return true;}
 };
